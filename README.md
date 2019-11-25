@@ -24,8 +24,8 @@ _Configurar los paquetes en las propiedades del pom.xml_
 ```
 <properties>
 	<postgresql.version>9.2-1003-jdbc4</postgresql.version>
-	<main-package>com.cominvi.app</main-package>
-	<entity-package>com.cominvi.app.commons.models</entity-package>
+	<entity-package>com.cominvi.app</entity-package>
+	<entity-package-model>com.cominvi.app.commons.models</entity-package-model>
 </properties>
 ```
 _Ejecutar como Maven->Run As->Maven Build y escribir el siguiente goal:_
