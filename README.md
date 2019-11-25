@@ -16,9 +16,7 @@ _Configurar su conexión en el archivo reverse-persistence.xml localizado en src
 		<property name="openjpa.ConnectionUserName" value="sa" />
 		<property name="openjpa.ConnectionPassword" value="sa" />
 		<property name="openjpa.ConnectionURL" value="jdbc:jtds:sqlserver://servidor/basededatos" />
-		<property name="javax.persistence.jdbc.driver"
-			value="net.sourceforge.jtds.jdbc.Driver" />
-
+		<property name="javax.persistence.jdbc.driver" value="net.sourceforge.jtds.jdbc.Driver" />
 	</properties>
 </persistence-unit>
 ```
@@ -37,5 +35,5 @@ exec:java@rmt
 _Debe de conectarse a la base de datos y construir las entidades, refrescar el paquete src/main/java con el botón *refresh*_
 _Ejecutar nuevamente otro Maven Build para construir los repositorios y controladores pero con este goal:_
 ```
-exec:java@rmt
+exec:java@cb
 ```
