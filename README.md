@@ -1,11 +1,14 @@
-#Generador de clases
+# Generador de clases
+
 _Con este generador se pretende automatizar la generación de entidades y estructura de controladores, servicios y repositorios._
-### Pre-requisitos 📋
+
+## Pre-requisitos 📋
 
 ```
 * Eclipse o Spring Tools
 ```
-##Uso 🔧
+## Uso 🔧
+
 _Configurar su conexión en el archivo reverse-persistence.xml localizado en src/main/resources/META-INF/reverse-persistence.xml, ejemplo:_
 ```
 <persistence-unit name="foo"> <!-- only used to reverse the db -->
