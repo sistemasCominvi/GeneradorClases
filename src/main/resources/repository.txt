@@ -1,0 +1,107 @@
+package @paqueteDao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import @nameModel.@nameClase;
+
+@Repository
+public class Jdbc@nameClaseRepository {
+
+	@Autowired
+	public JdbcTemplate jdbcTemplate;
+
+    private final String tabla = "@project.dbo.@tableName";
+    
+    private final String insert = "INSERT INTO "+tabla+" "
+    		+ "(@allFields) "
+    		+ "values (@allQuestionFields)";
+    
+
+    public List<@nameClase> findAll() {
+        return jdbcTemplate.query("SELECT * FROM " + tabla, new @nameClaseRowMapper());
+    }
+
+
+    public @nameClase findById(Long @primaryKey) {
+        return jdbcTemplate.queryForObject("SELECT * FROM " + tabla + " WHERE @primaryKey = " + @primaryKey, new @nameClaseRowMapper());
+    }
+
+
+    public @nameClase save(final @nameClase @nameClassMin) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+                @preparedSetStatement
+                return ps;
+            }
+        }, keyHolder);
+        
+         @nameClassMin.@primarySetKey
+        
+        return @nameClassMin;
+    }
+    
+
+    public Boolean saveAll(final List<@nameClase> @namePluralClass) {
+        
+        jdbcTemplate.batchUpdate(insert, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                @nameClase @nameClassMin = @namePluralClass.get(i);
+                @preparedSetStatement
+            }
+
+            @Override
+            public int getBatchSize() {
+                return @namePluralClass.size();
+            }
+        });
+        
+        return true;
+    }
+   
+
+    public @nameClase update(final @nameClase @nameClassMin, Long @primaryKey) {
+        String sql = "UPDATE " + tabla + " SET @setScript  WHERE @primaryKey = ?";
+                
+        jdbcTemplate.update(sql, new Object[] {
+            @preparedGetStatement
+        });
+        
+        return @nameClassMin;
+    }
+
+
+    public Boolean removeById(Long @primaryKey) {
+        String delete = "DELETE FROM " + tabla + " WHERE @primaryKey = ?";
+        jdbcTemplate.update(delete, new Object[]{@primaryKey});
+        return true;
+    }
+
+    private static class @nameClaseRowMapper implements RowMapper<@nameClase> {
+
+        @Override
+        public @nameClase mapRow(ResultSet rs, int rowNum) throws SQLException {
+        
+        	@nameClase @nameClassMin = new @nameClase();
+            @entityFromRS
+            return @nameClassMin;
+        }
+    }
+}

@@ -1,0 +1,105 @@
+package @paqueteController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import @paqueteService.I@nameClaseService;
+import @nameModel.@nameClase;
+
+@RestController
+@RequestMapping("/@nameClassMin")
+public class @nameClaseController {
+
+	
+	@Autowired
+	private I@nameClaseService @nameClassMinService;
+	
+	@GetMapping()
+	public List<@nameClase> index() {
+		return @nameClassMinService.findAll();
+	}
+	
+	
+	@GetMapping("/{@primaryKey}")
+	public @nameClase buscar@nameClase(@PathVariable Long @primaryKey) {
+		
+		@nameClase @nameClassMin = null;
+		
+		try {
+			@nameClassMin = @nameClassMinService.findById(@primaryKey);
+		}catch (DataAccessException e) {
+			return null;
+		}
+		
+		return @nameClassMin;
+	}
+	
+
+	
+	@PostMapping()
+	public ResponseEntity<?> guardar(@RequestBody @nameClase @nameClassMin) {
+
+		Map<String, Object> map = new HashMap<>();
+		try {
+			@nameClassMin = @nameClassMinService.save(@nameClassMin);
+		}catch (DataAccessException e) {
+			map.put("mensaje", "Error al insertar el registro");
+			map.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<@nameClase>(@nameClassMin, HttpStatus.CREATED);
+		
+	}
+	
+	@PutMapping("/{@primaryKey}")
+	public ResponseEntity<?> actualizar(@RequestBody @nameClase @nameClassMin, @PathVariable Long @primaryKey) {
+		
+		Map<String, Object> map = new HashMap<>();
+		try {
+			@nameClassMinService.update(@nameClassMin, @primaryKey);
+			@nameClassMin = @nameClassMinService.findById(@primaryKey);
+		}catch (DataAccessException e) {
+			map.put("mensaje", "Error al insertar el registro");
+			map.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<@nameClase>(@nameClassMin, HttpStatus.CREATED);
+		
+	}
+	
+	@DeleteMapping("/{@primaryKey}")
+	public ResponseEntity<?> eliminar@nameClase(@PathVariable Long @primaryKey) {
+		
+		Map<String, Object> map = new HashMap<>();
+		try {
+			@nameClassMinService.removeById(@primaryKey);
+		}catch (DataAccessException e) {
+			map.put("mensaje", "Error al insertar el registro");
+			map.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		map.put("mensaje", "El registro se elimino con éxito");
+		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		
+	}
+	
+	
+}
