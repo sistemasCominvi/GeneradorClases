@@ -16,8 +16,8 @@
 	<url>http://maven.apache.org</url>
 	<properties>
 		<postgresql.version>9.2-1003-jdbc4</postgresql.version>
-		<entity-package>com.cominvi.app</entity-package>
-		<entity-package-model>com.cominvi.app.commons.models</entity-package-model>
+		<main-package>com.cominvi.app</main-package>
+		<entity-package>com.cominvi.app.commons.models</entity-package>
 	</properties>
 	<dependencies>
 		<dependency>
