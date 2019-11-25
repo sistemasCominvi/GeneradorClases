@@ -9,15 +9,15 @@
 		<version>2.2.1.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.mx.vise</groupId>
-	<artifactId>reverseIngeopenjpa</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
-	<name>reverseIngeopenjpa Maven Webapp</name>
+	<groupId>com.cominvi</groupId>
+	<artifactId>generador</artifactId>
+	<version>0.0.1</version>
+	<name>Generador JDBC</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<postgresql.version>9.2-1003-jdbc4</postgresql.version>
-		<entity-package>com.cominvi.app</entity-package>
-		<entity-package-model>com.cominvi.app.commons.models</entity-package-model>
+		<main-package>com.cominvi.app</main-package>
+		<entity-package>com.cominvi.app.commons.models</entity-package>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -102,7 +102,7 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		<finalName>reverseIngeopenjpa</finalName>
+		<finalName>generador</finalName>
 		<pluginManagement>
 			<plugins>
 				<plugin>

@@ -1,0 +1,55 @@
+package @paqueteService;
+
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import @nameModel.@nameClase;
+import @paqueteClass.repositories.Jdbc@nameClaseRepository;
+import @paqueteServiceImpl.I@nameClaseService;
+
+
+@Service
+public class @nameClaseService implements I@nameClaseService{
+	@Autowired
+	private Jdbc@nameClaseRepository @nameClassMinDao;
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<@nameClase> findAll() {
+		return @nameClassMinDao.findAll();
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public @nameClase findById(Long @primaryKey) {
+		return @nameClassMinDao.findById(@primaryKey);
+	}
+
+	@Transactional
+	@Override
+	public @nameClase save(@nameClase @nameClassMin) {
+		return @nameClassMinDao.save(@nameClassMin);
+	}
+
+	@Transactional
+	@Override
+	public Boolean saveAll(List<@nameClase> @namePluralClass) {
+		return @nameClassMinDao.saveAll(@namePluralClass);
+	}
+
+	@Transactional
+	@Override
+	public @nameClase update(@nameClase @nameClassMin, Long @primaryKey) {
+		return @nameClassMinDao.update(@nameClassMin, @primaryKey);
+	}
+
+	@Transactional
+	@Override
+	public Boolean removeById(Long @primaryKey) {
+		return @nameClassMinDao.removeById(@primaryKey);
+	}
+
+}
