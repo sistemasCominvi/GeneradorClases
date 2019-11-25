@@ -9,8 +9,8 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 public class POMExplorer {
 	
-	public static final String PACKAGE_PROPERTY = "main-package";
-	public static final String PACKAGE_PROPERTY_MODEL = "entity-package";
+	public static final String PACKAGE_PROPERTY = "entity-package";
+	public static final String PACKAGE_PROPERTY_MODEL = "entity-package-model";
 	public static String getPropertyValueByName(String name) {
 		MavenXpp3Reader reader = new MavenXpp3Reader();
 		Model model;
