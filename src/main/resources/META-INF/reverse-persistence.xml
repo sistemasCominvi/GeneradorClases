@@ -13,6 +13,11 @@
 				value="jdbc:jtds:sqlserver://CM-LEO-SIS-JAZM/capitalhumano" />
 			<property name="javax.persistence.jdbc.driver"
 				value="net.sourceforge.jtds.jdbc.Driver" />
+			<!-- <property name="openjpa.ConnectionUserName" value="angelo" /> <property 
+				name="openjpa.ConnectionPassword" value="Cominvi123" /> <property name="openjpa.ConnectionURL" 
+				value="jdbc:jtds:sqlserver://localhost/eventos" /> <property name="javax.persistence.jdbc.driver" 
+				value="net.sourceforge.jtds.jdbc.Driver" /> -->
+
 		</properties>
 	</persistence-unit>
 </persistence>
