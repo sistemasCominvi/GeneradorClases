@@ -20,17 +20,19 @@ public class ScriptBuilder {
 	/**
 	 * @param entities           las entidades
 	 * @param withQuestionSymbol si se quiere en vez de los nombres el signo de
-	 *                           interrogación
+	 *                           interrogaciï¿½n
 	 * @return las columnas de la entidad concatenadas columna1,columna2 o si es
 	 *         signo ?,?
 	 */
 	public static String getAllColumns(Entity entities, boolean withQuestionSymbol) {
 		String columns = "";
-		for (Column column : entities.getColumns()) {
-			if (column.getColumnType() != ColumnType.ID)
-				columns += (!withQuestionSymbol ? column.getName() : "?") + ",";
+		if (!entities.getColumns().isEmpty()) {
+			for (Column column : entities.getColumns()) {
+				if (column.getColumnType() != ColumnType.ID)
+					columns += (!withQuestionSymbol ? column.getName() : "?") + ",";
+			}
+			columns = columns.substring(0, columns.length() - 1);
 		}
-		columns = columns.substring(0, columns.length() - 1);
 		return columns;
 	}
 
@@ -100,8 +102,9 @@ public class ScriptBuilder {
 		String result = null;
 		try {
 			result = columns.substring(0, columns.length() - 2);
-		}catch(StringIndexOutOfBoundsException e) {
-			System.err.println("Ocurrió un error al obtener los get de la entidad "+entity.getName()+", result:"+columns);
+		} catch (StringIndexOutOfBoundsException e) {
+			System.err.println(
+					"Ocurriï¿½ un error al obtener los get de la entidad " + entity.getName() + ", result:" + columns);
 		}
 		return result;
 	}
@@ -109,7 +112,7 @@ public class ScriptBuilder {
 	/**
 	 * @param entity la entidad
 	 * @return los campos de la entidad en funcion del paquete configurado del
-	 *         modelo y de la entidad enviada como parámetro
+	 *         modelo y de la entidad enviada como parï¿½metro
 	 */
 	private static Field[] getEntityFields(Entity entity, boolean withIds) {
 		Field[] fields = new Field[] {};
@@ -155,9 +158,9 @@ public class ScriptBuilder {
 	}
 
 	/**
-	 * Método para depurar el nombre del campo de la entidad si tiene paquetes toma
-	 * solo su nombre, si es nativo hace mayúscula la primera letra y lo regresa, si
-	 * es Integer lo hace Int (para los métodos set y get del Prepared Statement)
+	 * Mï¿½todo para depurar el nombre del campo de la entidad si tiene paquetes toma
+	 * solo su nombre, si es nativo hace mayï¿½scula la primera letra y lo regresa, si
+	 * es Integer lo hace Int (para los mï¿½todos set y get del Prepared Statement)
 	 * 
 	 * @param field el campo a depurar
 	 * @return el campo depurado
@@ -167,7 +170,7 @@ public class ScriptBuilder {
 		String[] typePackages = type.split("\\.");
 		/*
 		 * Si se pudo hacer split es que tiene paquetes ejemplo class java.lang.Integer
-		 * toma solo Integer (posición 2 en arreglo)
+		 * toma solo Integer (posiciï¿½n 2 en arreglo)
 		 */
 		if (typePackages.length > 0) {
 			return capitalizeFirstLetter(typePackages[typePackages.length - 1]).equals("Integer") ? "Int"
@@ -179,7 +182,7 @@ public class ScriptBuilder {
 
 	/**
 	 * @param str el String a convertir
-	 * @return el string con la primera letra mayúscula
+	 * @return el string con la primera letra mayï¿½scula
 	 */
 	public static String capitalizeFirstLetter(String str) {
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
@@ -217,7 +220,7 @@ public class ScriptBuilder {
 		 * Por cada campo buscalo en las columnas y obten su indice y asignalo
 		 */
 		inputCycle: for (int i = 0; i < inputFields.length; i++) {
-			columnCycle:for (Column column : entity.getColumns()) {
+			columnCycle: for (Column column : entity.getColumns()) {
 				if (column.getColumnType() == ColumnType.ID && !withIds)
 					continue columnCycle;
 				if (column.getName().equals(inputFields[i].getName())) {
@@ -254,7 +257,7 @@ public class ScriptBuilder {
 	/**
 	 * @param primaryKey la llave primaria a convertir
 	 * @param entity     la entidad
-	 * @return la asiganción dinamica segun su tipo (Long, int o string)
+	 * @return la asiganciï¿½n dinamica segun su tipo (Long, int o string)
 	 */
 	public static String getDynamicIDAssignation(Column primaryKey, Entity entity) {
 		Field field = getColumnField(primaryKey, entity, true);

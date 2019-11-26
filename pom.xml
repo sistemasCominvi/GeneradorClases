@@ -158,6 +158,10 @@
 									<argument>src/main/resources/META-INF/reverse-persistence.xml</argument>
 									<argument>-metadata</argument>
 									<argument>package</argument>
+									<argument>-inverseRelations</argument>
+									<argument>false</argument>
+									<argument>-useForeignKeyName</argument>
+									<argument>false</argument>
 								</arguments>
 							</configuration>
 						</execution>

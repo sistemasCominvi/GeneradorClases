@@ -39,6 +39,7 @@ public class Main {
 			if (!entities.isEmpty()) {
 				int counter = 0;
 				for (Entity entity : entities) {
+					try {
 
 					Configuracion config = new Configuracion(entity.getName(),
 							ProjectFolderConfiguration.getBasePackage(), primaryKeyType);
@@ -66,8 +67,11 @@ public class Main {
 					FileCreator obj = new FileCreator(config);
 					if (obj.createFilesDaoAndService())
 						counter++;
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				}
-				System.out.println("Se generó la estructura dao,service,controller para " + counter + " de "
+				System.out.println("Se generï¿½ la estructura dao,service,controller para " + counter + " de "
 						+ entities.size() + " entidades\nFallaron " + (entities.size() - counter));
 			}
 		}
