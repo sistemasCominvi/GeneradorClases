@@ -81,6 +81,7 @@ public class FileCreator {
 			dao = dao.replaceAll("@allFields", this.configuracion.getAllFields());
 			dao = dao.replaceAll("@allQuestionFields", this.configuracion.getAllQuestionFields());
 			dao = dao.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
+			dao = dao.replaceAll("@primarySQLKey", this.configuracion.getPrimaryKeySQL());
 			dao = dao.replaceAll("@setScript", this.configuracion.getSetSQLScript());
 			dao = dao.replaceAll("@preparedGetStatement", configuracion.getPreparedStatementOnlyGet());
 			dao = dao.replaceAll("@preparedSetStatement", configuracion.getPreparedStatementFromEntity());
@@ -168,7 +169,7 @@ public class FileCreator {
 				return false;
 			}
 		} catch (NullPointerException e) {
-			System.err.println("Ocurrió un error al generar los archivos de la entidad: "+this.configuracion.getNameClase());
+			System.err.println("Ocurriï¿½ un error al generar los archivos de la entidad: "+this.configuracion.getNameClase());
 			return false;
 		}
 		return true;
@@ -248,7 +249,7 @@ public class FileCreator {
 		} catch (Exception e) {
 			System.err.println("Hola, necesitas construir primero tus entidades, para ello: \n"
 					+ "1.- Configura tu conexion en reverseIngeopenjpa\\src\\main\\resources\\META-INF\\reverse-persistence.xml\n"
-					+ "2.- Configura tu paquete en el pom.xml en la configuración de reverseIngeopenjpa (al final) en el parametro de paquete.\n"
+					+ "2.- Configura tu paquete en el pom.xml en la configuraciï¿½n de reverseIngeopenjpa (al final) en el parametro de paquete.\n"
 					+ "3.- Configura tus rutas en el main de este paquete.\n"
 					+ "4.- Corre este proyecto (reverseIngeopenjpa) como maven build.");
 			// e.printStackTrace();

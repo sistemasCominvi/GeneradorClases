@@ -53,6 +53,7 @@ public class Main {
 					config.setNameClassMin(entity.getName().toLowerCase());
 					config.setTableName(entity.getTableName());
 					config.setPrimaryKey(entity.getPrimaryKeys().get(0).getName());
+					config.setPrimaryKeySQL(ScriptBuilder.convertToSQLFormat(entity.getPrimaryKeys().get(0).getName()));
 					config.setPrimaryKeySet(
 							ScriptBuilder.getDynamicIDAssignation(entity.getPrimaryKeys().get(0), entity));
 					config.setAllFields(ScriptBuilder.getAllColumns(entity, false));

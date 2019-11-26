@@ -6,9 +6,10 @@ public class Column {
 	private boolean nullable;
 	private int length;
 	private ColumnType columnType;
+	private String fieldName;
 
 	public enum ColumnType {
-		ID, BASIC, MANY_TO_ONE, ONE_TO_MANY
+		ID, BASIC, MANY_TO_ONE, ONE_TO_MANY, FOREIGN
 	}
 
 	public String getName() {
@@ -65,6 +66,14 @@ public class Column {
 	public Column setColumnType(ColumnType columnType) {
 		this.columnType = columnType;
 		return this;
+	}
+
+	public String getFieldName() {
+		return fieldName;
+	}
+
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
 	}
 
 }

@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.CaseFormat;
+import com.rever.files.XMLExtractor;
 import com.rever.files.xml.Column;
 import com.rever.files.xml.Column.ColumnType;
 import com.rever.files.xml.Entity;
@@ -75,10 +77,17 @@ public class ScriptBuilder {
 		 * Construye por cada campo
 		 */
 		for (int i = 0; i < fields.length; i++) {
-			if (getDebuggedField(fields[i]).equals("Set"))
+			if (getDebuggedField(fields[i], false).equals("Set"))
 				continue;
-			preparedStatement += "ps.set" + getDebuggedField(fields[i]) + "(" + (counter) + ", "
-					+ buildGet(entity, fields[i]) + ");\n";
+			Class foreign = isEntityType(fields[i]);
+			if (foreign != null) {
+				preparedStatement += "ps.set" + getDebuggedField(getIdForeign(fields[i]).getField(), false) + "("
+						+ (counter) + ", " + buildGet(entity, fields[i]) + getForeignKeyPrimaryKeyGet(fields[i])
+						+ ");\n";
+			} else {
+				preparedStatement += "ps.set" + getDebuggedField(fields[i], false) + "(" + (counter) + ", "
+						+ buildGet(entity, fields[i]) + ");\n";
+			}
 			counter++;
 		}
 		return preparedStatement;
@@ -97,7 +106,8 @@ public class ScriptBuilder {
 		for (int i = 0; i < fields.length; i++) {
 			String getType = fields[i].getType().toString().contains("Boolean")
 					|| fields[i].getType().toString().contains("boolean") ? ".is" : ".get";
-			columns += getSingularEntityName(entity) + getType + capitalizeFirstLetter(fields[i].getName()) + "(),\n";
+			columns += getSingularEntityName(entity) + getType + capitalizeFirstLetter(fields[i].getName()) + "()"
+					+ getForeignKeyPrimaryKeyGet(fields[i]) + ",\n";
 		}
 		String result = null;
 		try {
@@ -107,6 +117,101 @@ public class ScriptBuilder {
 					"Ocurri� un error al obtener los get de la entidad " + entity.getName() + ", result:" + columns);
 		}
 		return result;
+	}
+
+	/**
+	 * @param field
+	 * @return
+	 */
+	private static String getForeignKeyPrimaryKeyGet(Field field) {
+		ColumnField columnField = getIdForeign(field);
+		return columnField != null ? ".get" + capitalizeFirstLetter(columnField.getColumn().getName()) + "()" : "";
+	}
+
+	/**
+	 * 
+	 * Cuando el campo sea una llave foranea se debe obtener el getId de ese campo o
+	 * entidad foranea
+	 * 
+	 * @param field el campo a verificar si es foraneo
+	 * @return el get formado del id de ese campo
+	 */
+	private static ColumnField getIdForeign(Field field) {
+		/*
+		 * Si es entidad el campo
+		 */
+		if (isEntityType(field) != null) {
+			/*
+			 * Extrae las entidades nuevamente para buscar la foranea y sacar sus llaves
+			 * primarias
+			 */
+			List<Entity> entities = new XMLExtractor(ProjectFolderConfiguration.getORMXMLAbsolutePath())
+					.extractEntities();
+			for (Entity entity : entities) {
+				/*
+				 * Si se obtuvo una entidad entonces extrae su llave primaria
+				 */
+				if (entity.getName().equals(getDebuggedField(field, true))) {
+					/*
+					 * Busca el tipo de la llave primaria de la clase foranea
+					 */
+					Field[] entityFields = getEntityFields(entity, true);
+					for (int i = 0; i < entityFields.length; i++) {
+						if (entityFields[i].getName().equals(entity.getPrimaryKeys().get(0).getName())) {
+							return new ColumnField(entity.getPrimaryKeys().get(0), entityFields[i]);
+						}
+					}
+
+				}
+			}
+		}
+		return null;
+	}
+
+	public static class ColumnField {
+
+		private Column column;
+		private Field field;
+
+		public ColumnField(Column column, Field field) {
+			this.column = column;
+			this.field = field;
+		}
+
+		public Column getColumn() {
+			return column;
+		}
+
+		public void setColumn(Column column) {
+			this.column = column;
+		}
+
+		public Field getField() {
+			return field;
+		}
+
+		public void setField(Field field) {
+			this.field = field;
+		}
+
+	}
+
+	/**
+	 * Se necesita verificar que el campo a crear no sea entidad, para eso se
+	 * instancea con su paquete (el declarado como modelo) y el nombre de la
+	 * entidad, si se comprueba que no es entidad lanza una excepcion.
+	 * 
+	 * @param field el campo a verificar si es entidad
+	 * @return true o false dependiendo si es entidad
+	 */
+	private static Class isEntityType(Field field) {
+		try {
+			Class<?> cls = Class.forName(ProjectFolderConfiguration.getModelPackage() + "."
+					+ capitalizeFirstLetter(getDebuggedField(field, true)));
+			return cls;
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -140,7 +245,7 @@ public class ScriptBuilder {
 		String getType = field.getType().toString().contains("Boolean")
 				|| field.getType().toString().contains("boolean") ? ".is" : ".get";
 		String baseGet = getSingularEntityName(entity) + getType + capitalizeFirstLetter(field.getName()) + "()";
-		if (getDebuggedField(field).equals("Date"))
+		if (getDebuggedField(field, false).equals("Date"))
 			return "new java.sql.Date(" + baseGet + ".getTime())";
 		else
 			return baseGet;
@@ -162,10 +267,11 @@ public class ScriptBuilder {
 	 * solo su nombre, si es nativo hace may�scula la primera letra y lo regresa, si
 	 * es Integer lo hace Int (para los m�todos set y get del Prepared Statement)
 	 * 
-	 * @param field el campo a depurar
+	 * @param field    el campo a depurar
+	 * @param getClean si se desea limpio sin depurar
 	 * @return el campo depurado
 	 */
-	public static String getDebuggedField(Field field) {
+	public static String getDebuggedField(Field field, boolean getClean) {
 		String type = field.getType().toString();
 		String[] typePackages = type.split("\\.");
 		/*
@@ -173,10 +279,12 @@ public class ScriptBuilder {
 		 * toma solo Integer (posici�n 2 en arreglo)
 		 */
 		if (typePackages.length > 0) {
-			return capitalizeFirstLetter(typePackages[typePackages.length - 1]).equals("Integer") ? "Int"
-					: capitalizeFirstLetter(typePackages[typePackages.length - 1]);
+			return getClean ? typePackages[typePackages.length - 1]
+					: capitalizeFirstLetter(typePackages[typePackages.length - 1]).equals("Integer") ? "Int"
+							: capitalizeFirstLetter(typePackages[typePackages.length - 1]);
 		} else {
-			return capitalizeFirstLetter(type).equals("Integer") ? "Int" : capitalizeFirstLetter(type);
+			return getClean ? typePackages[typePackages.length - 1]
+					: capitalizeFirstLetter(type).equals("Integer") ? "Int" : capitalizeFirstLetter(type);
 		}
 	}
 
@@ -196,10 +304,19 @@ public class ScriptBuilder {
 		String rowMapper = "";
 		Field[] fields = getEntityFields(entity, true);
 		for (int i = 0; i < fields.length; i++) {
-			if (getDebuggedField(fields[i]).equals("Set"))
+			if (getDebuggedField(fields[i], false).equals("Set"))
 				continue;
-			rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName()) + "(rs.get"
-					+ getDebuggedField(fields[i]) + "(\"" + fields[i].getName() + "\")); \n";
+			if (isEntityType(fields[i]) != null) {
+				ColumnField foreign = getIdForeign(fields[i]);
+				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
+						+ "(new " + ProjectFolderConfiguration.getModelPackage() + "."
+						+ capitalizeFirstLetter(fields[i].getName()) + "(rs.get"
+						+ getDebuggedField(foreign.getField(), false) + "(\"" + foreign.getColumn().getName()
+						+ "\"))); \n";
+			} else {
+				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
+						+ "(rs.get" + getDebuggedField(fields[i], false) + "(\"" + fields[i].getName() + "\")); \n";
+			}
 		}
 		return rowMapper;
 	}
@@ -223,9 +340,16 @@ public class ScriptBuilder {
 			columnCycle: for (Column column : entity.getColumns()) {
 				if (column.getColumnType() == ColumnType.ID && !withIds)
 					continue columnCycle;
-				if (column.getName().equals(inputFields[i].getName())) {
-					fields[entity.getColumns().indexOf(column)] = inputFields[i];
-					continue inputCycle;
+				if (column.getColumnType() == ColumnType.FOREIGN) {
+					if (column.getFieldName().equals(inputFields[i].getName())) {
+						fields[entity.getColumns().indexOf(column)] = inputFields[i];
+						continue inputCycle;
+					}
+				} else {
+					if (column.getName().equals(inputFields[i].getName())) {
+						fields[entity.getColumns().indexOf(column)] = inputFields[i];
+						continue inputCycle;
+					}
 				}
 			}
 		}
@@ -277,5 +401,15 @@ public class ScriptBuilder {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Convierte las mayusculas en la misma letra con un guion bajo atras.
+	 * ejemplo: columnaUno a columna_uno
+	 * @param name el texto a convertir
+	 * @return
+	 */
+	public static String convertToSQLFormat(String name) {		
+		return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
 	}
 }

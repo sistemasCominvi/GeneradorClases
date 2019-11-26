@@ -27,6 +27,7 @@ public class Configuracion {
 	private String entityFromResultSet;
 	private String primaryKeySet;
 	private String tableName;
+	private String primaryKeySQL;
 
 	public Configuracion(String nameClase, String paqueteEntity, String tipeId) {
 		this.nameClase = nameClase;
@@ -278,6 +279,14 @@ public class Configuracion {
 
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
+	}
+
+	public String getPrimaryKeySQL() {
+		return primaryKeySQL;
+	}
+
+	public void setPrimaryKeySQL(String primaryKeySQL) {
+		this.primaryKeySQL = primaryKeySQL;
 	}
 
 }
