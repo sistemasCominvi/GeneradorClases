@@ -35,8 +35,8 @@ public class Jdbc@nameClaseRepository {
     }
 
 
-    public @nameClase findById(Long @primaryKey) {
-        return jdbcTemplate.queryForObject("SELECT * FROM " + tabla + " WHERE @primarySQLKey = " + @primaryKey, new @nameClaseRowMapper());
+    public @nameClase findById(@primaryListKeysParameters) {
+        return jdbcTemplate.queryForObject("SELECT * FROM " + tabla + " WHERE @primarySQLKeys, new @nameClaseRowMapper());
     }
 
 
@@ -67,8 +67,8 @@ public class Jdbc@nameClaseRepository {
     }
    
 
-    public @nameClase update(final @nameClase @nameClassMin, Long @primaryKey) {
-        String sql = "UPDATE " + tabla + " SET @setScript  WHERE @primarySQLKey = ?";
+    public @nameClase update(final @nameClase @nameClassMin, @primaryListKeysParameters) {
+        String sql = "UPDATE " + tabla + " SET @setScript  WHERE @primaryQuestionSQLKeys";
                 
         jdbcTemplate.update(sql, new Object[] {
             @preparedGetStatement
@@ -78,9 +78,9 @@ public class Jdbc@nameClaseRepository {
     }
 
 
-    public Boolean removeById(Long @primaryKey) {
-        String delete = "DELETE FROM " + tabla + " WHERE @primarySQLKey = ?";
-        jdbcTemplate.update(delete, new Object[]{@primaryKey});
+    public Boolean removeById(@primaryListKeysParameters) {
+        String delete = "DELETE FROM " + tabla + " WHERE @primaryQuestionSQLKeys";
+        jdbcTemplate.update(delete, new Object[]{@primaryNameKey});
         return true;
     }
 

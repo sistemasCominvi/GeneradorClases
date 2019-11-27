@@ -113,8 +113,8 @@ public class FileCreator {
 			dao = dao.replaceAll("@namePluralClass", this.configuracion.getNameClassMin() + "s");
 			dao = dao.replaceAll("@allFields", this.configuracion.getAllFields());
 			dao = dao.replaceAll("@allQuestionFields", this.configuracion.getAllQuestionFields());
-			dao = dao.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
-			dao = dao.replaceAll("@primarySQLKey", this.configuracion.getPrimaryKeySQL());
+			//dao = dao.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
+			dao = dao.replaceAll("@primarySQLKeys", this.configuracion.getPrimaryKeySQL());
 			dao = dao.replaceAll("@setScript", this.configuracion.getSetSQLScript());
 			dao = dao.replaceAll("@preparedGetStatement", configuracion.getPreparedStatementOnlyGet());
 			dao = dao.replaceAll("@preparedSetStatement", configuracion.getPreparedStatementFromEntity());
@@ -123,6 +123,10 @@ public class FileCreator {
 			dao = dao.replaceAll("@nameClase", this.configuracion.getNameClase());
 			dao = dao.replaceAll("@nameModel", this.configuracion.getModelName());
 			dao = dao.replaceAll("@tableName", this.configuracion.getTableName());
+			
+			dao = dao.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParameters());
+			dao = dao.replaceAll("@primaryQuestionSQLKeys", this.configuracion.getPrimaryKeysSQLQuestion());
+			dao = dao.replaceAll("@primaryNameKey", this.configuracion.getPrimaryKeyNames());
 			try {
 				dao = new Formatter().formatSource(dao);
 			} catch (FormatterException e1) {

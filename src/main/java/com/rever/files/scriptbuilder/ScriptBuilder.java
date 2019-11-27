@@ -449,4 +449,48 @@ public class ScriptBuilder {
 	public static String convertToSQLFormat(String name) {
 		return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
 	}
+
+	public static String getPrimaryKeys(Entity entity, PrimaryKeyScriptType type) {
+		String result = "";
+		try {
+			for (Column column : entity.getPrimaryKeys()) {
+				switch (type) {
+				case PARAMETER:
+					result += "Long " + column.getName() + ",";
+					break;
+				case WHERE_SCRIPT:
+					result += convertToSQLFormat(column.getName()) + "=\"+" + column.getName() + "+\" and ";
+					break;
+				case WHERE_SCRIPT_WITH_QUESTION_MARK:
+					result += convertToSQLFormat(column.getName()) + "= ? and ";
+					break;
+				case ONLY_NAMES:
+					result += column.getName()+",";
+					break;
+				}
+			}
+			int cut = 0;;
+			switch (type) {
+			case PARAMETER:
+			case ONLY_NAMES:
+				cut = 1;
+				break;
+			case WHERE_SCRIPT:
+				cut = 7;
+				break;
+			case WHERE_SCRIPT_WITH_QUESTION_MARK:
+				cut = 5;
+
+				break;
+			}
+			result = result.substring(0, result.length() - cut);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public enum PrimaryKeyScriptType {
+		PARAMETER, WHERE_SCRIPT, WHERE_SCRIPT_WITH_QUESTION_MARK, ONLY_NAMES
+	}
 }

@@ -29,7 +29,11 @@ public class Configuracion {
 	private String tableName;
 	private String primaryKeySQL;
 	private String keyHolder;
-
+	private String primaryKeyParameters;
+	private String primaryKeysSQL;
+	private String primaryKeysSQLQuestion;
+	private String primaryKeyNames;
+	
 	public Configuracion(String nameClase, String paqueteEntity, String tipeId) {
 		this.nameClase = nameClase;
 		this.paqueteEntity = paqueteEntity;
@@ -296,6 +300,38 @@ public class Configuracion {
 
 	public void setKeyHolder(String keyHolder) {
 		this.keyHolder = keyHolder;
+	}
+
+	public String getPrimaryKeyParameters() {
+		return primaryKeyParameters;
+	}
+
+	public void setPrimaryKeyParameters(String primaryKeyParameters) {
+		this.primaryKeyParameters = primaryKeyParameters;
+	}
+
+	public String getPrimaryKeysSQL() {
+		return primaryKeysSQL;
+	}
+
+	public void setPrimaryKeysSQL(String primaryKeysSQL) {
+		this.primaryKeysSQL = primaryKeysSQL;
+	}
+
+	public String getPrimaryKeysSQLQuestion() {
+		return primaryKeysSQLQuestion;
+	}
+
+	public void setPrimaryKeysSQLQuestion(String primaryKeysSQLQuestion) {
+		this.primaryKeysSQLQuestion = primaryKeysSQLQuestion;
+	}
+
+	public String getPrimaryKeyNames() {
+		return primaryKeyNames;
+	}
+
+	public void setPrimaryKeyNames(String primaryKeyNames) {
+		this.primaryKeyNames = primaryKeyNames;
 	}
 
 }

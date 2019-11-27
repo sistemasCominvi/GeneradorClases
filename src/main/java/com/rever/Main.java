@@ -8,6 +8,7 @@ import com.rever.config.Configuracion;
 import com.rever.files.FileCreator;
 import com.rever.files.XMLExtractor;
 import com.rever.files.scriptbuilder.ScriptBuilder;
+import com.rever.files.scriptbuilder.ScriptBuilder.PrimaryKeyScriptType;
 import com.rever.files.xml.Column;
 import com.rever.files.xml.Entity;
 import com.rever.folders.ProjectFolderConfiguration;
@@ -53,7 +54,6 @@ public class Main {
 					config.setNameClassMin(entity.getName().toLowerCase());
 					config.setTableName(entity.getTableName());
 					config.setPrimaryKey(entity.getPrimaryKeys().get(0).getName());
-					config.setPrimaryKeySQL(ScriptBuilder.convertToSQLFormat(entity.getPrimaryKeys().get(0).getName()));
 					config.setPrimaryKeySet(
 							ScriptBuilder.getDynamicIDAssignation(entity.getPrimaryKeys().get(0), entity));
 					config.setAllFields(ScriptBuilder.getAllColumns(entity, false));
@@ -66,6 +66,10 @@ public class Main {
 					config.setPaqueteGenericDao(ProjectFolderConfiguration.getGenericDaoPackage());
 					config.setPaqueteGenericService(ProjectFolderConfiguration.getGenericServicePackage());
 					config.setKeyHolder(ScriptBuilder.getKeyHolder(entity));
+					config.setPrimaryKeyParameters(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.PARAMETER));
+					config.setPrimaryKeySQL(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.WHERE_SCRIPT));
+					config.setPrimaryKeysSQLQuestion(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.WHERE_SCRIPT_WITH_QUESTION_MARK));
+					config.setPrimaryKeyNames(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.ONLY_NAMES));
 					FileCreator obj = new FileCreator(config);
 					if (obj.createFilesDaoAndService())
 						counter++;
