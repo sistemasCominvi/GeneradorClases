@@ -103,6 +103,7 @@ public class FileCreator {
 			createFile(urlServiceImpl);
 			String fileDao = urlDao + "Jdbc" + this.configuracion.getNameClase() + "Repository.java";
 			String dao = readFileToString("repository.txt", null);
+			dao = dao.replaceAll("@keyHolder", this.configuracion.getKeyHolder());
 			dao = dao.replaceAll("@paqueteDao", this.configuracion.getPaqueteDao());
 			dao = dao.replaceAll("@paqueteGenericDao", this.configuracion.getPaqueteGenericDao());
 			dao = dao.replaceAll("@paqueteClass", this.configuracion.getPaqueteEntity());

@@ -41,18 +41,8 @@ public class Jdbc@nameClaseRepository {
 
 
     public @nameClase save(final @nameClase @nameClassMin) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        
-        jdbcTemplate.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                PreparedStatement ps = con.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
-                @preparedSetStatement
-                return ps;
-            }
-        }, keyHolder);
-        
-         @nameClassMin.@primarySetKey
+    
+       	@keyHolder
         
         return @nameClassMin;
     }

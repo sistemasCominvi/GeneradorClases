@@ -20,7 +20,7 @@ import com.rever.folders.ProjectFolderConfiguration;
 public class ScriptBuilder {
 
 	/**
-	 * @param entity           las entidades
+	 * @param entity             las entidades
 	 * @param withQuestionSymbol si se quiere en vez de los nombres el signo de
 	 *                           interrogaci�n
 	 * @return las columnas de la entidad concatenadas columna1,columna2 o si es
@@ -37,6 +37,27 @@ public class ScriptBuilder {
 			columns = columns.substring(0, columns.length() - 1);
 		}
 		return columns;
+	}
+
+	/**
+	 * @param entity la entidad
+	 * @return su keyholder dependiendo si tiene autoincrementable
+	 */
+	public static String getKeyHolder(Entity entity) {
+
+		return entityHasIdentity(entity) ? " KeyHolder keyHolder = new GeneratedKeyHolder();\r\n" + "        \r\n"
+				+ "        jdbcTemplate.update(new PreparedStatementCreator() {\r\n" + "            @Override\r\n"
+				+ "            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {\r\n"
+				+ "                PreparedStatement ps = con.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);\r\n"
+				+ "                @preparedSetStatement\r\n" + "                return ps;\r\n" + "            }\r\n"
+				+ "        }, keyHolder);\r\n" + "        \r\n" + "         @nameClassMin.@primarySetKey" :
+
+				"        \r\n" + "        jdbcTemplate.update(new PreparedStatementCreator() {\r\n"
+						+ "            @Override\r\n"
+						+ "            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {\r\n"
+						+ "                PreparedStatement ps = con.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);\r\n"
+						+ "                @preparedSetStatement\r\n" + "                return ps;\r\n"
+						+ "            }\r\n" + "        });\r\n";
 	}
 
 	/**
@@ -93,17 +114,17 @@ public class ScriptBuilder {
 		}
 		return preparedStatement;
 	}
-	
+
 	/**
 	 * @param entity la entidad
 	 * @return si la entidad tiene autoincrementable
 	 */
 	private static boolean entityHasIdentity(Entity entity) {
-		for(Column column : entity.getColumns()) {
-			if(column.getColumnType() == ColumnType.ID)
-				if(column.getColumnDefinition().contains("identity"))
+		for (Column column : entity.getColumns()) {
+			if (column.getColumnType() == ColumnType.ID)
+				if (column.getColumnDefinition().contains("identity"))
 					return true;
-					
+
 		}
 		return false;
 	}
@@ -419,12 +440,13 @@ public class ScriptBuilder {
 	}
 
 	/**
-	 * Convierte las mayusculas en la misma letra con un guion bajo atras.
-	 * ejemplo: columnaUno a columna_uno
+	 * Convierte las mayusculas en la misma letra con un guion bajo atras. ejemplo:
+	 * columnaUno a columna_uno
+	 * 
 	 * @param name el texto a convertir
 	 * @return
 	 */
-	public static String convertToSQLFormat(String name) {		
+	public static String convertToSQLFormat(String name) {
 		return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
 	}
 }

@@ -28,6 +28,7 @@ public class Configuracion {
 	private String primaryKeySet;
 	private String tableName;
 	private String primaryKeySQL;
+	private String keyHolder;
 
 	public Configuracion(String nameClase, String paqueteEntity, String tipeId) {
 		this.nameClase = nameClase;
@@ -287,6 +288,14 @@ public class Configuracion {
 
 	public void setPrimaryKeySQL(String primaryKeySQL) {
 		this.primaryKeySQL = primaryKeySQL;
+	}
+
+	public String getKeyHolder() {
+		return keyHolder;
+	}
+
+	public void setKeyHolder(String keyHolder) {
+		this.keyHolder = keyHolder;
 	}
 
 }

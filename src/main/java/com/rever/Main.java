@@ -65,6 +65,7 @@ public class Main {
 					config.setPaquete(ProjectFolderConfiguration.getBasePackage());
 					config.setPaqueteGenericDao(ProjectFolderConfiguration.getGenericDaoPackage());
 					config.setPaqueteGenericService(ProjectFolderConfiguration.getGenericServicePackage());
+					config.setKeyHolder(ScriptBuilder.getKeyHolder(entity));
 					FileCreator obj = new FileCreator(config);
 					if (obj.createFilesDaoAndService())
 						counter++;
