@@ -39,6 +39,7 @@ public class Main {
 			if (!entities.isEmpty()) {
 				int counter = 0;
 				for (Entity entity : entities) {
+					try {
 
 					Configuracion config = new Configuracion(entity.getName(),
 							ProjectFolderConfiguration.getBasePackage(), primaryKeyType);
@@ -52,6 +53,7 @@ public class Main {
 					config.setNameClassMin(entity.getName().toLowerCase());
 					config.setTableName(entity.getTableName());
 					config.setPrimaryKey(entity.getPrimaryKeys().get(0).getName());
+					config.setPrimaryKeySQL(ScriptBuilder.convertToSQLFormat(entity.getPrimaryKeys().get(0).getName()));
 					config.setPrimaryKeySet(
 							ScriptBuilder.getDynamicIDAssignation(entity.getPrimaryKeys().get(0), entity));
 					config.setAllFields(ScriptBuilder.getAllColumns(entity, false));
@@ -66,8 +68,11 @@ public class Main {
 					FileCreator obj = new FileCreator(config);
 					if (obj.createFilesDaoAndService())
 						counter++;
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				}
-				System.out.println("Se generó la estructura dao,service,controller para " + counter + " de "
+				System.out.println("Se generï¿½ la estructura dao,service,controller para " + counter + " de "
 						+ entities.size() + " entidades\nFallaron " + (entities.size() - counter));
 			}
 		}

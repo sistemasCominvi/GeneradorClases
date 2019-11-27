@@ -12,7 +12,7 @@ public class ProjectFolderConfiguration {
 	public static final String ORM_XML_LOCATION = SRC_LOCATION + "\\orm.xml";
 	public static final String REVERSE_PERSISTENCE_XML_LOCATION = "src\\main\\resources\\META-INF\\reverse-persistence.xml";
 	public static final String MODEL_DESIGNATION = "models";
-	private static final String PROJECT_DIR = "user.dir";
+	public static final String PROJECT_DIR = "user.dir";
 
 	/**
 	 * @param packageName el nombre del paquete
@@ -61,7 +61,8 @@ public class ProjectFolderConfiguration {
 	 * @return la ruta del modelo
 	 */
 	public static String getModelPath() {
-		return getBaseURI() + MODEL_DESIGNATION + "\\";
+		return System.getProperty(PROJECT_DIR) + "\\"+SRC_LOCATION+"\\"
+				+ POMExplorer.getPropertyValueByName(POMExplorer.PACKAGE_PROPERTY_MODEL).replace(".", "\\") + "\\";
 	}
 
 	/**

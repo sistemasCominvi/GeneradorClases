@@ -28,6 +28,7 @@ public class XMLExtractor {
 	private static final String PROPERTY_TAG = "property";
 	private static final Object CONNECTION_ATTRIBUTE = "openjpa.ConnectionURL";
 	private static final String VALUE_ATTRIBUTE = "value";
+	private static final String MANY_TO_ONE_TAG = "many-to-one";
 	private String xmlPath;
 
 	public XMLExtractor(String xmlPath) {
@@ -76,17 +77,10 @@ public class XMLExtractor {
 
 					entity.setTableName(table.getAttribute(ATTRIBUTE_NAME));
 
-					NodeList ids = xmlEntityElement.getElementsByTagName(ID_TAG);
-					for (int i = 0; i < ids.getLength(); i++) {
-						Element id = (Element) ids.item(i);
-						columns.add(getDefinition(id).setColumnType(ColumnType.ID));
-					}
+					columns.addAll(getColumnsByTag(xmlEntityElement, ID_TAG, ColumnType.ID));
+					columns.addAll(getColumnsByTag(xmlEntityElement, BASIC_TAG, ColumnType.BASIC));
+					columns.addAll(getColumnsByTag(xmlEntityElement, MANY_TO_ONE_TAG, ColumnType.FOREIGN));
 
-					NodeList basics = xmlEntityElement.getElementsByTagName(BASIC_TAG);
-					for (int i = 0; i < basics.getLength(); i++) {
-						Element basic = (Element) basics.item(i);
-						columns.add(getDefinition(basic).setColumnType(ColumnType.BASIC));
-					}
 					entity.setColumns(columns);
 					entities.add(entity);
 				}
@@ -98,14 +92,41 @@ public class XMLExtractor {
 	}
 
 	/**
+	 * @param parent
+	 * @param tag
+	 * @param columnType
+	 * @return
+	 */
+	private List<Column> getColumnsByTag(Element parent, String tag, ColumnType columnType) {
+		NodeList basics = parent.getElementsByTagName(tag);
+
+		List<Column> columnList = new ArrayList<>();
+		
+
+		for (int i = 0; i < basics.getLength(); i++) {
+			Element basic = (Element) basics.item(i);
+			Column column = getDefinition(basic).setColumnType(columnType);
+			String fieldName = basic.getAttribute(ATTRIBUTE_NAME);
+			column.setFieldName(fieldName);	
+			columnList.add(column);
+
+		}
+
+		return columnList;
+	}
+
+	/**
 	 * @param element the xml element
 	 * @return la columna formada
 	 */
 	private Column getDefinition(Element element) {
 		NodeList definitions = element.getElementsByTagName("column");
+		if (definitions == null || definitions.getLength() == 0)
+			definitions = element.getElementsByTagName("join-column");
 		Element definition = (Element) definitions.item(0);
 		Column column = new Column();
-		column.setColumnDefinition(definition.getAttribute("column-definition"));
+		if (definition.getAttribute("column-definition") != null)
+			column.setColumnDefinition(definition.getAttribute("column-definition"));
 		column.setName(definition.getAttribute("name"));
 		try {
 			int length = Integer.parseInt(definition.getAttribute("length"));
@@ -133,7 +154,6 @@ public class XMLExtractor {
 				Element property = (Element) xmlEntities.item(i);
 				String name = property.getAttribute(ATTRIBUTE_NAME);
 				if (name.equals(CONNECTION_ATTRIBUTE)) {
-					String separator = "\\";
 					String connection = property.getAttribute(VALUE_ATTRIBUTE);
 					String databaseName = connection.substring(connection.indexOf("//") + 2, connection.length());
 					return databaseName.split("/")[databaseName.split("/").length - 1];

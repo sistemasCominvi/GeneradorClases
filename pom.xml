@@ -7,15 +7,14 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.2.1.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath />
 	</parent>
-	<groupId>com.mx.vise</groupId>
-	<artifactId>reverseIngeopenjpa</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
-	<name>reverseIngeopenjpa Maven Webapp</name>
-	<url>http://maven.apache.org</url>
+	<groupId>com.cominvi</groupId>
+	<artifactId>generador</artifactId>
+	<version>0.0.1</version>
+	<name>Generador de clases COMINVI</name>
+	<url>http://www.cominvi.com</url>
 	<properties>
-		<postgresql.version>9.2-1003-jdbc4</postgresql.version>
 		<entity-package>com.cominvi.app</entity-package>
 		<entity-package-model>com.cominvi.app.commons.models</entity-package-model>
 	</properties>
@@ -93,6 +92,13 @@
 			<artifactId>google-java-format</artifactId>
 			<version>1.7</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>28.1-jre</version>
+		</dependency>
+
 
 	</dependencies>
 	<build>
@@ -158,6 +164,10 @@
 									<argument>src/main/resources/META-INF/reverse-persistence.xml</argument>
 									<argument>-metadata</argument>
 									<argument>package</argument>
+									<argument>-inverseRelations</argument>
+									<argument>false</argument>
+									<argument>-useForeignKeyName</argument>
+									<argument>false</argument>
 								</arguments>
 							</configuration>
 						</execution>
