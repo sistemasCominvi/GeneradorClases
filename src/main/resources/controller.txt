@@ -96,7 +96,7 @@ public class @nameClaseController {
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		map.put("mensaje", "El registro se elimino con éxito");
+		map.put("mensaje", "El registro se elimino con exito");
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		
 	}

@@ -20,18 +20,19 @@ import com.rever.folders.ProjectFolderConfiguration;
 public class ScriptBuilder {
 
 	/**
-	 * @param entities           las entidades
+	 * @param entity           las entidades
 	 * @param withQuestionSymbol si se quiere en vez de los nombres el signo de
 	 *                           interrogaci�n
 	 * @return las columnas de la entidad concatenadas columna1,columna2 o si es
 	 *         signo ?,?
 	 */
-	public static String getAllColumns(Entity entities, boolean withQuestionSymbol) {
+	public static String getAllColumns(Entity entity, boolean withQuestionSymbol) {
 		String columns = "";
-		if (!entities.getColumns().isEmpty()) {
-			for (Column column : entities.getColumns()) {
-				if (column.getColumnType() != ColumnType.ID)
+		if (!entity.getColumns().isEmpty()) {
+			for (Column column : entity.getColumns()) {
+				if (column.getColumnType() != ColumnType.ID || !entityHasIdentity(entity)) {
 					columns += (!withQuestionSymbol ? column.getName() : "?") + ",";
+				}
 			}
 			columns = columns.substring(0, columns.length() - 1);
 		}
@@ -45,7 +46,7 @@ public class ScriptBuilder {
 	public static String getAllColumnsForSQLSet(Entity entity) {
 		String columns = "";
 		for (Column column : entity.getColumns()) {
-			if (column.getColumnType() != ColumnType.ID)
+			if (column.getColumnType() != ColumnType.ID || !entityHasIdentity(entity))
 				columns += column.getName() + " = ?,";
 		}
 		columns = columns.substring(0, columns.length() - 1);
@@ -68,7 +69,7 @@ public class ScriptBuilder {
 		 * Extrae los campos de ese modelo (el tipo de dato y el nombre)
 		 * 
 		 */
-		Field[] fields = getEntityFields(entity, false);
+		Field[] fields = getEntityFields(entity, !entityHasIdentity(entity));
 		/*
 		 * Inicializa el contador de posicion en el PS
 		 */
@@ -92,6 +93,20 @@ public class ScriptBuilder {
 		}
 		return preparedStatement;
 	}
+	
+	/**
+	 * @param entity la entidad
+	 * @return si la entidad tiene autoincrementable
+	 */
+	private static boolean entityHasIdentity(Entity entity) {
+		for(Column column : entity.getColumns()) {
+			if(column.getColumnType() == ColumnType.ID)
+				if(column.getColumnDefinition().contains("identity"))
+					return true;
+					
+		}
+		return false;
+	}
 
 	/**
 	 * @return un String con los(as) campos/columnas de la entidad en forma de
@@ -101,7 +116,7 @@ public class ScriptBuilder {
 
 		String columns = "";
 
-		Field[] fields = getEntityFields(entity, false);
+		Field[] fields = getEntityFields(entity, !entityHasIdentity(entity));
 
 		for (int i = 0; i < fields.length; i++) {
 			String getType = fields[i].getType().toString().contains("Boolean")
