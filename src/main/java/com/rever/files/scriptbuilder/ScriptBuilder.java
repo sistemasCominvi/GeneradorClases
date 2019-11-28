@@ -20,6 +20,10 @@ import com.rever.folders.ProjectFolderConfiguration;
  */
 public class ScriptBuilder {
 
+	private static final String FECHA_HORA_MOD_FIELD = "fechahoramod";
+	private static final String FECHA_HORA_ALTA_FIELD = "fechahoraalta";
+	private static final String ID_EMPLEADO_ALTA_FIELD = "idempleadoalta";
+
 	/**
 	 * @param entity             las entidades
 	 * @param withQuestionSymbol si se quiere en vez de los nombres el signo de
@@ -32,7 +36,10 @@ public class ScriptBuilder {
 		if (!entity.getColumns().isEmpty()) {
 			for (Column column : entity.getColumns()) {
 				if (column.getColumnType() != ColumnType.ID || !entityHasIdentity(entity)) {
-					columns += (!withQuestionSymbol ? column.getName() : "?") + ",";
+					columns += (!withQuestionSymbol ? column.getName()
+							: (column.getName().equals(FECHA_HORA_MOD_FIELD)
+									|| column.getName().equals(FECHA_HORA_ALTA_FIELD) ? "getdate()" : "?"))
+							+ ",";
 				}
 			}
 			columns = columns.substring(0, columns.length() - 1);
@@ -61,19 +68,6 @@ public class ScriptBuilder {
 						+ "            }\r\n" + "        });\r\n";
 	}
 
-	/**
-	 * @param entity la entidad
-	 * @return sus campos ordenados por coma ejemplo: campo1=?,campo2=?,etc.
-	 */
-	public static String getAllColumnsForSQLSet(Entity entity) {
-		String columns = "";
-		for (Column column : entity.getColumns()) {
-			if (column.getColumnType() != ColumnType.ID/* || !entityHasIdentity(entity) */)
-				columns += column.getName() + " = ?,";
-		}
-		columns = columns.substring(0, columns.length() - 1);
-		return columns;
-	}
 
 	/**
 	 * Construye el prepared statement en forma de: ps.setTipoDeDato(posicion,
@@ -103,6 +97,8 @@ public class ScriptBuilder {
 			if (getDebuggedField(fields[i], false).equals("Set"))
 				continue;
 			Class foreign = isEntityType(fields[i]);
+			if (fields[i].getName().equals(FECHA_HORA_MOD_FIELD) || fields[i].getName().equals(FECHA_HORA_ALTA_FIELD))
+				continue;
 			if (foreign != null) {
 				preparedStatement += "ps.set" + getDebuggedField(getIdForeign(fields[i]).getField(), false) + "("
 						+ (counter) + ", " + buildGet(entity, fields[i]) + getForeignKeyPrimaryKeyGet(fields[i])
@@ -131,6 +127,10 @@ public class ScriptBuilder {
 	}
 
 	/**
+	 * 
+	 * Genera los gets de la entidad para su update
+	 * 
+	 * 
 	 * @return un String con los(as) campos/columnas de la entidad en forma de
 	 *         entidad.getNombreCampo(),
 	 */
@@ -143,8 +143,8 @@ public class ScriptBuilder {
 		 * interrogacion de jdbc
 		 */
 
-		Field[] fields = getEntityFields(entity, false);//todos los campos sin llaves primarias
-		Field[] allFields = getEntityFields(entity, true);//todos con llaves primarias
+		Field[] fields = getEntityFields(entity, false);// todos los campos sin llaves primarias
+		Field[] allFields = getEntityFields(entity, true);// todos con llaves primarias
 		List<Field> onlyIdsFields = new ArrayList<>();
 
 		/*
@@ -169,8 +169,10 @@ public class ScriptBuilder {
 		for (int i = 0; i < fields.length; i++) {
 			String getType = fields[i].getType().toString().contains("Boolean")
 					|| fields[i].getType().toString().contains("boolean") ? ".is" : ".get";
-			columns += getSingularEntityName(entity) + getType + capitalizeFirstLetter(fields[i].getName()) + "()"
-					+ getForeignKeyPrimaryKeyGet(fields[i]) + ",\n";
+			if (!fields[i].getName().equals(FECHA_HORA_MOD_FIELD) && !fields[i].getName().equals(FECHA_HORA_ALTA_FIELD)
+					&& !fields[i].getName().equals(ID_EMPLEADO_ALTA_FIELD))
+				columns += getSingularEntityName(entity) + getType + capitalizeFirstLetter(fields[i].getName()) + "()"
+						+ getForeignKeyPrimaryKeyGet(fields[i]) + ",\n";
 		}
 		String result = null;
 		try {
@@ -181,6 +183,25 @@ public class ScriptBuilder {
 		}
 		return result;
 	}
+	
+	/**
+	 * @param entity la entidad
+	 * @return sus campos ordenados por coma ejemplo: campo1=?,campo2=?,etc.
+	 */
+	public static String getAllColumnsForSQLSet(Entity entity) {
+		String columns = "";
+		for (Column column : entity.getColumns()) {
+			
+			if(column.getName().equals(FECHA_HORA_ALTA_FIELD) || column.getName().equals(ID_EMPLEADO_ALTA_FIELD)) continue;
+
+			if (column.getColumnType() != ColumnType.ID/* || !entityHasIdentity(entity) */)
+				columns += column.getName().equals(FECHA_HORA_MOD_FIELD) ? column.getName() + " = getdate(),"
+						: column.getName() + " = ?,";
+		}
+		columns = columns.substring(0, columns.length() - 1);
+		return columns;
+	}
+
 
 	/**
 	 * @param field
@@ -373,15 +394,26 @@ public class ScriptBuilder {
 				ColumnField foreign = getIdForeign(fields[i]);
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
 						+ "(new " + ProjectFolderConfiguration.getModelPackage() + "."
-						+ capitalizeFirstLetter(fields[i].getName()) + "(rs.get"
+						+ capitalizeFirstLetter(getDebuggedField(fields[i], false)) + "(rs.get"
 						+ getDebuggedField(foreign.getField(), false) + "(\"" + foreign.getColumn().getName()
 						+ "\"))); \n";
 			} else {
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
-						+ "(rs.get" + getDebuggedField(fields[i], false) + "(\"" + fields[i].getName() + "\")); \n";
+						+ "(rs.get" + isDate(getDebuggedField(fields[i], false)) + "(\"" + fields[i].getName()
+						+ "\")); \n";
 			}
 		}
 		return rowMapper;
+	}
+
+	/**
+	 * @param debuggedField el campo a comparar
+	 * @return si es fecha conviertelo a timestamp
+	 */
+	private static String isDate(String debuggedField) {
+		if (debuggedField.equals("Date"))
+			return "Timestamp";
+		return debuggedField;
 	}
 
 	/**
@@ -508,7 +540,7 @@ public class ScriptBuilder {
 					result += "@PathVariable Long " + column.getName() + ",";
 					break;
 				case FOR_GET_MAPPING:
-					result+="/{"+column.getName()+"}";
+					result += "/{" + column.getName() + "}";
 					break;
 				}
 			}
@@ -543,12 +575,8 @@ public class ScriptBuilder {
 	 *
 	 */
 	public enum PrimaryKeyScriptType {
-		PARAMETER,
-		WHERE_SCRIPT,
-		WHERE_SCRIPT_WITH_QUESTION_MARK,
-		ONLY_NAMES, 
-		PARAMETER_WITH_PATH_VARIABLE,
+		PARAMETER, WHERE_SCRIPT, WHERE_SCRIPT_WITH_QUESTION_MARK, ONLY_NAMES, PARAMETER_WITH_PATH_VARIABLE,
 		FOR_GET_MAPPING
 	}
-	
+
 }
