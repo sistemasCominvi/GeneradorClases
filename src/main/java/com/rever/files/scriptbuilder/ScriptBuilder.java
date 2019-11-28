@@ -15,16 +15,32 @@ import com.rever.folders.ProjectFolderConfiguration;
 /**
  * Clase para construir la estructura del repositorio
  * 
+ * Glosario:
+ * 
+ * Campo: es el atributo declarado en las clases entidades.
+ * 
+ * Columna: es la etiqueta declarada en el orm.xml.
+ * 
  * @author angelo.loza
  *
  */
 public class ScriptBuilder {
 
+	/*
+	 * Campos de auditoria
+	 * 
+	 */
 	private static final String FECHA_HORA_MOD_FIELD = "fechahoramod";
 	private static final String FECHA_HORA_ALTA_FIELD = "fechahoraalta";
 	private static final String ID_EMPLEADO_ALTA_FIELD = "idempleadoalta";
 
 	/**
+	 * 
+	 * Metodo para obtener la lista de entidades ordenada desde el orm.xml, si
+	 * obtiene un campo de auditoria automáticamente asigna un getdate() regresa un
+	 * nombrecampo1,nombrecampo2,nombrecampo3 o ?,?,? o
+	 * getdate(),getdate(),getdate() si es fecha.
+	 * 
 	 * @param entity             las entidades
 	 * @param withQuestionSymbol si se quiere en vez de los nombres el signo de
 	 *                           interrogaci�n
@@ -48,6 +64,9 @@ public class ScriptBuilder {
 	}
 
 	/**
+	 * Regresa el keyholder (si la entidad tiene autoincrementable) si no regresa el
+	 * update vacio.
+	 * 
 	 * @param entity la entidad
 	 * @return su keyholder dependiendo si tiene autoincrementable
 	 */
@@ -67,7 +86,6 @@ public class ScriptBuilder {
 						+ "                @preparedSetStatement\r\n" + "                return ps;\r\n"
 						+ "            }\r\n" + "        });\r\n";
 	}
-
 
 	/**
 	 * Construye el prepared statement en forma de: ps.setTipoDeDato(posicion,
@@ -113,22 +131,24 @@ public class ScriptBuilder {
 	}
 
 	/**
+	 * Para identificar si la entidad tiene autoincrementable (busca identity en sus
+	 * llaves primarias)
+	 * 
 	 * @param entity la entidad
 	 * @return si la entidad tiene autoincrementable
 	 */
 	private static boolean entityHasIdentity(Entity entity) {
-		for (Column column : entity.getColumns()) {
-			if (column.getColumnType() == ColumnType.ID)
-				if (column.getColumnDefinition().contains("identity"))
-					return true;
-
-		}
+		for (Column column : entity.getPrimaryKeys())
+			if (column.getColumnDefinition().contains("identity"))
+				return true;
 		return false;
 	}
 
 	/**
 	 * 
-	 * Genera los gets de la entidad para su update
+	 * Genera los gets de la entidad para su update, ordenados campos basicos-llaves
+	 * primarias para corresponder con los set campo1=?,campo2=? where
+	 * llaveprimaria=?
 	 * 
 	 * 
 	 * @return un String con los(as) campos/columnas de la entidad en forma de
@@ -183,16 +203,20 @@ public class ScriptBuilder {
 		}
 		return result;
 	}
-	
+
 	/**
+	 * Regresa el script sql para el update, si es fechahoramod asigna
+	 * automaticamente el getdate
+	 * 
 	 * @param entity la entidad
 	 * @return sus campos ordenados por coma ejemplo: campo1=?,campo2=?,etc.
 	 */
 	public static String getAllColumnsForSQLSet(Entity entity) {
 		String columns = "";
 		for (Column column : entity.getColumns()) {
-			
-			if(column.getName().equals(FECHA_HORA_ALTA_FIELD) || column.getName().equals(ID_EMPLEADO_ALTA_FIELD)) continue;
+
+			if (column.getName().equals(FECHA_HORA_ALTA_FIELD) || column.getName().equals(ID_EMPLEADO_ALTA_FIELD))
+				continue;
 
 			if (column.getColumnType() != ColumnType.ID/* || !entityHasIdentity(entity) */)
 				columns += column.getName().equals(FECHA_HORA_MOD_FIELD) ? column.getName() + " = getdate(),"
@@ -202,8 +226,11 @@ public class ScriptBuilder {
 		return columns;
 	}
 
-
 	/**
+	 * Regresa el get de la llave primaria de la llave foranea de la entidad,
+	 * ejemplo: la entidad tiene un campo llamado Autos, extrae el idauto de Autos y
+	 * genera un autos.getIdAuto()
+	 * 
 	 * @param field
 	 * @return
 	 */
@@ -214,8 +241,9 @@ public class ScriptBuilder {
 
 	/**
 	 * 
-	 * Cuando el campo sea una llave foranea se debe obtener el getId de ese campo o
-	 * entidad foranea
+	 * Obtiene la llave primaria de la llave foranea de la entidad en objeto
+	 * columnfield (un objeto relacional de la columna declarada en orm.xml y el
+	 * campo declarado en su clase)
 	 * 
 	 * @param field el campo a verificar si es foraneo
 	 * @return el get formado del id de ese campo
@@ -252,6 +280,12 @@ public class ScriptBuilder {
 		return null;
 	}
 
+	/**
+	 * Clase interna para manipular la relacion de columna en xml-campo en clase
+	 * 
+	 * @author angelo.loza
+	 *
+	 */
 	public static class ColumnField {
 
 		private Column column;
@@ -281,9 +315,11 @@ public class ScriptBuilder {
 	}
 
 	/**
-	 * Se necesita verificar que el campo a crear no sea entidad, para eso se
-	 * instancea con su paquete (el declarado como modelo) y el nombre de la
-	 * entidad, si se comprueba que no es entidad lanza una excepcion.
+	 * Se necesita verificar que el campo a crear no sea entidad, para eso se crea
+	 * una instancia (se intenta) con su paquete (el declarado como modelo) y el
+	 * nombre de la entidad, si se comprueba que no es entidad lanza una excepcion y
+	 * por consecuente no es un modelo del proyecto (es un tipo de dato nativo o
+	 * local)
 	 * 
 	 * @param field el campo a verificar si es entidad
 	 * @return true o false dependiendo si es entidad
@@ -299,6 +335,9 @@ public class ScriptBuilder {
 	}
 
 	/**
+	 * Regresa los campos de la entidad dependiendo si se quieren todos o sin llaves
+	 * primarias (ordenados conforme el orm.xml)
+	 * 
 	 * @param entity la entidad
 	 * @return los campos de la entidad en funcion del paquete configurado del
 	 *         modelo y de la entidad enviada como par�metro
@@ -336,6 +375,9 @@ public class ScriptBuilder {
 	}
 
 	/**
+	 * Se obtiene en singular el nombre de la entidad si es autos regresa auto,
+	 * compras, compra, etc.
+	 * 
 	 * @param entity la entidad
 	 * @return el nombre de la entidad en singular (si es Entidades regresa entidad)
 	 */
@@ -347,9 +389,9 @@ public class ScriptBuilder {
 	}
 
 	/**
-	 * M�todo para depurar el nombre del campo de la entidad si tiene paquetes toma
-	 * solo su nombre, si es nativo hace may�scula la primera letra y lo regresa, si
-	 * es Integer lo hace Int (para los m�todos set y get del Prepared Statement)
+	 * Metodo para depurar el nombre del campo de la entidad si tiene paquetes toma
+	 * solo su nombre, si es nativo hace mayuscula la primera letra y lo regresa, si
+	 * es Integer lo hace Int (para los metodos set y get del Prepared Statement)
 	 * 
 	 * @param field    el campo a depurar
 	 * @param getClean si se desea limpio sin depurar
@@ -360,7 +402,7 @@ public class ScriptBuilder {
 		String[] typePackages = type.split("\\.");
 		/*
 		 * Si se pudo hacer split es que tiene paquetes ejemplo class java.lang.Integer
-		 * toma solo Integer (posici�n 2 en arreglo)
+		 * toma solo Integer (posicion 2 en arreglo)
 		 */
 		if (typePackages.length > 0) {
 			return getClean ? typePackages[typePackages.length - 1]
@@ -373,14 +415,22 @@ public class ScriptBuilder {
 	}
 
 	/**
+	 * Hace mayuscula la primera letra del string dado como parametro.
+	 * 
 	 * @param str el String a convertir
 	 * @return el string con la primera letra may�scula
 	 */
-	public static String capitalizeFirstLetter(String str) {
+	private static String capitalizeFirstLetter(String str) {
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
 
 	/**
+	 * Construye el rowMapper, si la entidad tiene algun campo de tipo entidad o
+	 * llave foranea (modelo clase) obtiene el id de esa llave y crea una instancia
+	 * de esa llave asignandole el id obtenido en el rowmapper, si no es entidad
+	 * pero es de tipo Date, cambia el tipo de dato Date a Timestamp (por que el
+	 * result set Date es solo fecha sin tiempo).
+	 * 
 	 * @param entity la entidad a convertir
 	 * @return el string formado
 	 */
@@ -392,10 +442,11 @@ public class ScriptBuilder {
 				continue;
 			if (isEntityType(fields[i]) != null) {
 				ColumnField foreign = getIdForeign(fields[i]);
+				Column actualColumn = getColumnByField(fields[i], entity);
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
 						+ "(new " + ProjectFolderConfiguration.getModelPackage() + "."
 						+ capitalizeFirstLetter(getDebuggedField(fields[i], false)) + "(rs.get"
-						+ getDebuggedField(foreign.getField(), false) + "(\"" + foreign.getColumn().getName()
+						+ getDebuggedField(foreign.getField(), false) + "(\"" + actualColumn.getName()
 						+ "\"))); \n";
 			} else {
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
@@ -407,6 +458,22 @@ public class ScriptBuilder {
 	}
 
 	/**
+	 * Obtiene la columna correspondiente al campo
+	 * 
+	 * @param field el campo a obtener
+	 * @param entity la entidad para buscar en ella
+	 * @return la columna correspondiente a ese campo
+	 */
+	private static Column getColumnByField(Field field, Entity entity) {
+		for(Column column : entity.getColumns())
+			if(column.getFieldName().equals(field.getName()))
+				return column;
+		return null;
+	}
+
+	/**
+	 * Determina si el campo es Date cambialo a Timestamp
+	 * 
 	 * @param debuggedField el campo a comparar
 	 * @return si es fecha conviertelo a timestamp
 	 */
@@ -460,26 +527,31 @@ public class ScriptBuilder {
 	}
 
 	/**
+	 * Obtiene el campo correspondiente a esa columna (para obtener su tipo, nombre
+	 * declarado, etc.)
+	 * 
 	 * @param column la columna que se desea obtener el tipo o campo
 	 * @param entity la entidad a extraer
 	 * @return el campo correspondiente a la columna
 	 */
-	public static Field getColumnField(Column column, Entity entity, boolean withIds) {
+	public static Field getFieldByColummn(Column column, Entity entity, boolean withIds) {
 		Field[] fields = getEntityFields(entity, withIds);
-		for (int i = 0; i < fields.length; i++) {
+		for (int i = 0; i < fields.length; i++)
 			if (fields[i].getName().equals(column.getName()))
 				return fields[i];
-		}
 		return null;
 	}
 
 	/**
+	 * Obtiene la asignacion dinamica del key holder dependiendodel tipo de esa
+	 * columna.
+	 * 
 	 * @param primaryKey la llave primaria a convertir
 	 * @param entity     la entidad
 	 * @return la asiganci�n dinamica segun su tipo (Long, int o string)
 	 */
 	public static String getDynamicIDAssignation(Column primaryKey, Entity entity) {
-		Field field = getColumnField(primaryKey, entity, true);
+		Field field = getFieldByColummn(primaryKey, entity, true);
 		if (field != null) {
 			if (field.getType().toString().contains("Long") || field.getType().toString().contains("long")) {
 				return "set" + ScriptBuilder.capitalizeFirstLetter(primaryKey.getName())

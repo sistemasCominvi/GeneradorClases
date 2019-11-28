@@ -17,6 +17,14 @@ import com.rever.files.xml.Column;
 import com.rever.files.xml.Column.ColumnType;
 import com.rever.files.xml.Entity;
 
+/**
+ * 
+ * Clase para obtener datos de los archivos XML, si es el orm.xml genera su
+ * lista de entidades.
+ * 
+ * @author angelo.loza
+ *
+ */
 public class XMLExtractor {
 
 	private static final String ENTITY_TAG = "entity";
@@ -86,7 +94,6 @@ public class XMLExtractor {
 				}
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
 			System.err.println("No se han generado entidades.");
 		}
 		return entities;
@@ -102,13 +109,12 @@ public class XMLExtractor {
 		NodeList basics = parent.getElementsByTagName(tag);
 
 		List<Column> columnList = new ArrayList<>();
-		
 
 		for (int i = 0; i < basics.getLength(); i++) {
 			Element basic = (Element) basics.item(i);
 			Column column = getDefinition(basic).setColumnType(columnType);
 			String fieldName = basic.getAttribute(ATTRIBUTE_NAME);
-			column.setFieldName(fieldName);	
+			column.setFieldName(fieldName);
 			columnList.add(column);
 
 		}
@@ -142,6 +148,9 @@ public class XMLExtractor {
 		return column;
 	}
 
+	/**
+	 * @return el nombre de la base de datos
+	 */
 	public String getDatabaseName() {
 		try {
 			File fXmlFile = new File(getXmlPath());

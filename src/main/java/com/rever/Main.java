@@ -14,6 +14,11 @@ import com.rever.files.xml.Entity;
 import com.rever.folders.ProjectFolderConfiguration;
 import com.rever.pom.POMExplorer;
 
+/**
+ * @author angelo.loza
+ *
+ * Clase principal para generar el repositorio, servicio y controllers.
+ */
 public class Main {
 	public static void main(String[] args) {
 		Runner runner = new Runner();
@@ -77,7 +82,7 @@ public class Main {
 						e.printStackTrace();
 					}
 				}
-				System.out.println("Se gener� la estructura dao,service,controller para " + counter + " de "
+				System.out.println("Se genero la estructura dao,service,controller para " + counter + " de "
 						+ entities.size() + " entidades\nFallaron " + (entities.size() - counter));
 			}
 		}
