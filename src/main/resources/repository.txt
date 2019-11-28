@@ -79,7 +79,7 @@ public class Jdbc@nameClaseRepository {
 
 
     public Boolean removeById(@primaryListKeysParameters) {
-        String delete = "DELETE FROM " + tabla + " WHERE @primaryQuestionSQLKeys";
+        String delete = "UPDATE " + tabla + " set estatus = 0 WHERE @primaryQuestionSQLKeys";
         jdbcTemplate.update(delete, new Object[]{@primaryNameKey});
         return true;
     }
