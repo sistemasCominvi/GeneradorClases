@@ -5,6 +5,12 @@ import java.util.List;
 
 import com.rever.files.xml.Column.ColumnType;
 
+/**
+ * Clase para instanciar objetos de tipo entidad desde el orm.xml
+ * 
+ * @author angelo.loza
+ *
+ */
 public class Entity {
 	
 	private List<Column> columns;
@@ -26,10 +32,10 @@ public class Entity {
 	
 	public List<Column> getPrimaryKeys() {
 		List<Column> primaryKeys = new ArrayList<Column>();
-		for(Column column : this.columns) {
+		for(Column column : this.columns) 
 			if(column.getColumnType() == ColumnType.ID)
 				primaryKeys.add(column);
-		}
+		
 		return primaryKeys;
 	}
 	public String getTableName() {

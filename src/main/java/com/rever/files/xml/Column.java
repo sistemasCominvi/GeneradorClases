@@ -1,5 +1,11 @@
 package com.rever.files.xml;
 
+/**
+ * Clase para instanciar objetos de tipo columna (obtenida de orm.xml)
+ * 
+ * @author angelo.loza
+ *
+ */
 public class Column {
 	private String name;
 	private String columnDefinition;

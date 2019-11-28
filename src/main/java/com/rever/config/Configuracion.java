@@ -1,18 +1,25 @@
 package com.rever.config;
 
+/**
+ * @author angelo.loza
+ * 
+ *         Clase de configuracion para las entidades, para cada entidad se tiene
+ *         una configuracion distinta
+ *
+ */
 public class Configuracion {
-	
+
 	private String urlHome;
 	private String urlClase;
 	private String nameClase;
-	
+
 	private String paqueteEntity;
 	private String paquete;
 	private String paqueteDao;
 	private String paqueteController;
 	private String paqueteService;
 	private String paqueteServiceImpl;
-	
+
 	private String modelName;
 	private String project;
 	private String allFields;
@@ -25,7 +32,7 @@ public class Configuracion {
 	private String entityFromResultSet;
 	private String tableName;
 	private String keyHolder;
-	
+
 	private String primaryKeyParameters;
 	private String primaryKeyParametersWithPathVariable;
 	private String primaryKeysSQL;
@@ -34,7 +41,7 @@ public class Configuracion {
 	private String primaryKeysForMapping;
 	private String primaryKeySet;
 	private String primaryKeySQL;
-	
+
 	public Configuracion(String nameClase, String paqueteEntity) {
 		this.nameClase = nameClase;
 		this.paqueteEntity = paqueteEntity;
@@ -56,8 +63,6 @@ public class Configuracion {
 		this.nameClase = nameClase;
 	}
 
-	
-
 	public String getPaquete() {
 		return paquete;
 	}
@@ -65,8 +70,6 @@ public class Configuracion {
 	public void setPaquete(String paquete) {
 		this.paquete = paquete;
 	}
-
-	
 
 	public String getPaqueteDao() {
 		return paqueteDao;
@@ -193,7 +196,6 @@ public class Configuracion {
 		this.nameClassMin = nameClassMin;
 	}
 
-
 	public String getPreparedStatementFromResultSet() {
 		return preparedStatementFromResultSet;
 	}
@@ -236,7 +238,7 @@ public class Configuracion {
 
 	public void setPrimaryKeySet(String string) {
 		this.primaryKeySet = string;
-		
+
 	}
 
 	public String getPrimaryKeySet() {

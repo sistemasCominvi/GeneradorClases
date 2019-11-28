@@ -31,6 +31,13 @@ import com.google.googlejavaformat.java.FormatterException;
 import com.rever.config.Configuracion;
 import com.rever.folders.ProjectFolderConfiguration;
 
+/**
+ * Clase para crear los archivos y reemplazar sus etiquetas con la configuracion
+ * establecida en la clase principal
+ * 
+ * @author angelo.loza
+ *
+ */
 public class FileCreator {
 
 	private Configuracion configuracion;
@@ -40,9 +47,15 @@ public class FileCreator {
 	}
 
 	public FileCreator() {
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Regresa el archivo dado como string
+	 * 
+	 * @param fileName el nombre del archivo
+	 * @param file el archivo
+	 * @return el archivo leído en forma de String
+	 */
 	private String readFileToString(String fileName, File file) {
 		String text = "";
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -62,16 +75,16 @@ public class FileCreator {
 	}
 
 	/**
-	 * 
+	 * Agrega la anotacion de fecha JSON a los modelos 
 	 */
 	public void addJSONAnnotation() {
 		String entityPath = ProjectFolderConfiguration.getModelPath() + this.configuracion.getNameClase() + ".java";
 		File file = new File(entityPath);
 		String srcFile = readFileToString(null, file);
-		
+
 		String importText = "java.util.*;\nimport com.fasterxml.jackson.annotation.JsonFormat;";
 		String annotationText = "@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = \"yyyy-MM-dd hh:mm:ss\")\nprivate Date";
-		
+
 		if (!srcFile.contains(importText))
 			srcFile = srcFile.replaceAll("java.util.*;", importText);
 		if (!srcFile.contains(annotationText))
@@ -88,6 +101,11 @@ public class FileCreator {
 
 	}
 
+	/**
+	 * Metodo para crear todos los archivos.
+	 * 
+	 * @return si se pudo crear exitosamente los archivos
+	 */
 	public boolean createFilesDaoAndService() {
 		try {
 
@@ -121,7 +139,7 @@ public class FileCreator {
 			dao = dao.replaceAll("@nameClase", this.configuracion.getNameClase());
 			dao = dao.replaceAll("@nameModel", this.configuracion.getModelName());
 			dao = dao.replaceAll("@tableName", this.configuracion.getTableName());
-			
+
 			dao = dao.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParameters());
 			dao = dao.replaceAll("@primaryQuestionSQLKeys", this.configuracion.getPrimaryKeysSQLQuestion());
 			dao = dao.replaceAll("@primaryNameKey", this.configuracion.getPrimaryKeyNames());
@@ -149,8 +167,9 @@ public class FileCreator {
 			controller = controller.replaceAll("@nameClassMin", this.configuracion.getNameClassMin());
 			controller = controller.replaceAll("@nameModel", this.configuracion.getModelName());
 			controller = controller.replaceAll("@paqueteService", this.configuracion.getPaqueteServiceImpl());
-			
-			controller = controller.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParametersWithPathVariable());
+
+			controller = controller.replaceAll("@primaryListKeysParameters",
+					this.configuracion.getPrimaryKeyParametersWithPathVariable());
 			controller = controller.replaceAll("@primaryNameKey", this.configuracion.getPrimaryKeyNames());
 			controller = controller.replaceAll("@getMappingKeys", this.configuracion.getPrimaryKeysForMapping());
 
@@ -177,7 +196,7 @@ public class FileCreator {
 			service = service.replaceAll("@nameClassMin", this.configuracion.getNameClassMin());
 			service = service.replaceAll("@namePluralClass", this.configuracion.getNameClassMin() + "s");
 			service = service.replaceAll("@nameModel", this.configuracion.getModelName());
-			
+
 			service = service.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParameters());
 			service = service.replaceAll("@primaryNameKey", this.configuracion.getPrimaryKeyNames());
 			try {
@@ -207,8 +226,9 @@ public class FileCreator {
 			serviceImpl = serviceImpl.replaceAll("@nameClassMin", this.configuracion.getNameClassMin());
 			serviceImpl = serviceImpl.replaceAll("@namePluralClass", this.configuracion.getNameClassMin() + "s");
 			serviceImpl = serviceImpl.replaceAll("@nameModel", this.configuracion.getModelName());
-			
-			serviceImpl = serviceImpl.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParameters());
+
+			serviceImpl = serviceImpl.replaceAll("@primaryListKeysParameters",
+					this.configuracion.getPrimaryKeyParameters());
 			serviceImpl = serviceImpl.replaceAll("@primaryNameKey", this.configuracion.getPrimaryKeyNames());
 			try {
 				serviceImpl = new Formatter().formatSource(serviceImpl);
@@ -231,6 +251,11 @@ public class FileCreator {
 		return true;
 	}
 
+	/**
+	 * @param sourceFile archivo fuente
+	 * @param destFile archivo destino
+	 * @return exito
+	 */
 	public boolean move(String sourceFile, String destFile) {
 		File dest = new File(destFile);
 		dest.mkdirs();
@@ -245,6 +270,9 @@ public class FileCreator {
 
 	}
 
+	/**
+	 * @param path el path a eliminar
+	 */
 	public void deleteDirectoryRecursion(Path path) {
 		try {
 			if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
@@ -260,10 +288,18 @@ public class FileCreator {
 		}
 	}
 
+	/**
+	 * @param file
+	 * @return
+	 */
 	public boolean deleteFile(File file) {
 		return file.delete();
 	}
 
+	/**
+	 * @param file
+	 * @return
+	 */
 	private boolean createFile(String file) {
 		File files = new File(file);
 		if (!files.exists()) {
@@ -273,6 +309,13 @@ public class FileCreator {
 		}
 	}
 
+	/**
+	 * Escribe un string en un archivo
+	 * 
+	 * @param aString el string a escribir
+	 * @param pathFile la ruta
+	 * @throws IOException 
+	 */
 	private void writeFile(String aString, String pathFile) throws IOException {
 		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pathFile), "UTF-8"));
 		try {
@@ -286,8 +329,9 @@ public class FileCreator {
 	 * @param path la ruta del archivo orm.xml generado por jpa
 	 * @return una lista de entidades
 	 */
+	@Deprecated
 	public ArrayList<String> extractEntityNames(String path) {
-		ArrayList<String> entities = new ArrayList();
+		ArrayList<String> entities = new ArrayList<String>();
 		try {
 			File fXmlFile = new File(path);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
