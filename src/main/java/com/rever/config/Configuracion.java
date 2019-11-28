@@ -1,38 +1,43 @@
 package com.rever.config;
 
 public class Configuracion {
+	
 	private String urlHome;
 	private String urlClase;
 	private String nameClase;
+	
 	private String paqueteEntity;
-	private String tipeId;
 	private String paquete;
-	private String paqueteGenericDao;
-	private String paqueteGenericService;
 	private String paqueteDao;
 	private String paqueteController;
 	private String paqueteService;
 	private String paqueteServiceImpl;
-	private String sessionFactoryName;
+	
 	private String modelName;
 	private String project;
 	private String allFields;
 	private String allQuestionFields;
 	private String nameClassMin;
-	private String primaryKey;
 	private String preparedStatementFromEntity;
 	private String preparedStatementFromResultSet;
 	private String preparedStatementOnlyGet;
 	private String setSQLScript;
 	private String entityFromResultSet;
-	private String primaryKeySet;
 	private String tableName;
+	private String keyHolder;
+	
+	private String primaryKeyParameters;
+	private String primaryKeyParametersWithPathVariable;
+	private String primaryKeysSQL;
+	private String primaryKeysSQLQuestion;
+	private String primaryKeyNames;
+	private String primaryKeysForMapping;
+	private String primaryKeySet;
 	private String primaryKeySQL;
-
-	public Configuracion(String nameClase, String paqueteEntity, String tipeId) {
+	
+	public Configuracion(String nameClase, String paqueteEntity) {
 		this.nameClase = nameClase;
 		this.paqueteEntity = paqueteEntity;
-		this.tipeId = tipeId;
 	}
 
 	public String getUrlHome() {
@@ -51,13 +56,7 @@ public class Configuracion {
 		this.nameClase = nameClase;
 	}
 
-	public String getTipeId() {
-		return tipeId;
-	}
-
-	public void setTipeId(String tipeId) {
-		this.tipeId = tipeId;
-	}
+	
 
 	public String getPaquete() {
 		return paquete;
@@ -67,13 +66,7 @@ public class Configuracion {
 		this.paquete = paquete;
 	}
 
-	public String getPaqueteGenericDao() {
-		return paqueteGenericDao;
-	}
-
-	public void setPaqueteGenericDao(String paqueteGenericDao) {
-		this.paqueteGenericDao = paqueteGenericDao;
-	}
+	
 
 	public String getPaqueteDao() {
 		return paqueteDao;
@@ -121,22 +114,6 @@ public class Configuracion {
 
 	public void setPaqueteService(String paqueteService) {
 		this.paqueteService = paqueteService;
-	}
-
-	public String getSessionFactoryName() {
-		return sessionFactoryName;
-	}
-
-	public void setSessionFactoryName(String sessionFactoryName) {
-		this.sessionFactoryName = sessionFactoryName;
-	}
-
-	public String getPaqueteGenericService() {
-		return paqueteGenericService;
-	}
-
-	public void setPaqueteGenericService(String paqueteGenericService) {
-		this.paqueteGenericService = paqueteGenericService;
 	}
 
 	public void construir() {
@@ -216,13 +193,6 @@ public class Configuracion {
 		this.nameClassMin = nameClassMin;
 	}
 
-	public String getPrimaryKey() {
-		return primaryKey;
-	}
-
-	public void setPrimaryKey(String primaryKey) {
-		this.primaryKey = primaryKey;
-	}
 
 	public String getPreparedStatementFromResultSet() {
 		return preparedStatementFromResultSet;
@@ -287,6 +257,62 @@ public class Configuracion {
 
 	public void setPrimaryKeySQL(String primaryKeySQL) {
 		this.primaryKeySQL = primaryKeySQL;
+	}
+
+	public String getKeyHolder() {
+		return keyHolder;
+	}
+
+	public void setKeyHolder(String keyHolder) {
+		this.keyHolder = keyHolder;
+	}
+
+	public String getPrimaryKeyParameters() {
+		return primaryKeyParameters;
+	}
+
+	public void setPrimaryKeyParameters(String primaryKeyParameters) {
+		this.primaryKeyParameters = primaryKeyParameters;
+	}
+
+	public String getPrimaryKeysSQL() {
+		return primaryKeysSQL;
+	}
+
+	public void setPrimaryKeysSQL(String primaryKeysSQL) {
+		this.primaryKeysSQL = primaryKeysSQL;
+	}
+
+	public String getPrimaryKeysSQLQuestion() {
+		return primaryKeysSQLQuestion;
+	}
+
+	public void setPrimaryKeysSQLQuestion(String primaryKeysSQLQuestion) {
+		this.primaryKeysSQLQuestion = primaryKeysSQLQuestion;
+	}
+
+	public String getPrimaryKeyNames() {
+		return primaryKeyNames;
+	}
+
+	public void setPrimaryKeyNames(String primaryKeyNames) {
+		this.primaryKeyNames = primaryKeyNames;
+	}
+
+	public String getPrimaryKeyParametersWithPathVariable() {
+		return primaryKeyParametersWithPathVariable;
+	}
+
+	public void setPrimaryKeyParametersWithPathVariable(String primaryKeyParametersWithPathVariable) {
+		this.primaryKeyParametersWithPathVariable = primaryKeyParametersWithPathVariable;
+	}
+
+	public String getPrimaryKeysForMapping() {
+		return primaryKeysForMapping;
+	}
+
+	public void setPrimaryKeysForMapping(String primaryKeysForMapping) {
+		this.primaryKeysForMapping = primaryKeysForMapping;
 	}
 
 }

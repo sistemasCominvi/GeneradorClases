@@ -8,6 +8,7 @@ import com.rever.config.Configuracion;
 import com.rever.files.FileCreator;
 import com.rever.files.XMLExtractor;
 import com.rever.files.scriptbuilder.ScriptBuilder;
+import com.rever.files.scriptbuilder.ScriptBuilder.PrimaryKeyScriptType;
 import com.rever.files.xml.Column;
 import com.rever.files.xml.Entity;
 import com.rever.folders.ProjectFolderConfiguration;
@@ -21,10 +22,6 @@ public class Main {
 
 	public static class Runner {
 		public void run() {
-			/*
-			 * Se asume que las tablas tienen un tipo de dato entero.
-			 */
-			String primaryKeyType = "Long";
 
 			/*
 			 * Obtiene los nombres a partir de los model generados por JPA
@@ -42,7 +39,7 @@ public class Main {
 					try {
 
 					Configuracion config = new Configuracion(entity.getName(),
-							ProjectFolderConfiguration.getBasePackage(), primaryKeyType);
+							ProjectFolderConfiguration.getBasePackage());
 					
 					String databaseName = new XMLExtractor(ProjectFolderConfiguration.REVERSE_PERSISTENCE_XML_LOCATION).getDatabaseName();
 					
@@ -52,19 +49,27 @@ public class Main {
 					config.setProject(databaseName);
 					config.setNameClassMin(entity.getName().toLowerCase());
 					config.setTableName(entity.getTableName());
-					config.setPrimaryKey(entity.getPrimaryKeys().get(0).getName());
-					config.setPrimaryKeySQL(ScriptBuilder.convertToSQLFormat(entity.getPrimaryKeys().get(0).getName()));
-					config.setPrimaryKeySet(
-							ScriptBuilder.getDynamicIDAssignation(entity.getPrimaryKeys().get(0), entity));
+					config.setPaquete(ProjectFolderConfiguration.getBasePackage());
+
 					config.setAllFields(ScriptBuilder.getAllColumns(entity, false));
 					config.setAllQuestionFields(ScriptBuilder.getAllColumns(entity, true));
 					config.setSetSQLScript(ScriptBuilder.getAllColumnsForSQLSet(entity));
 					config.setPreparedStatementOnlyGet(ScriptBuilder.getAllColumnGets(entity));
 					config.setPreparedStatementFromEntity(ScriptBuilder.createPreparedStatementFromEntity(entity));
 					config.setEntityFromResultSet(ScriptBuilder.buildRowMapper(entity));
-					config.setPaquete(ProjectFolderConfiguration.getBasePackage());
-					config.setPaqueteGenericDao(ProjectFolderConfiguration.getGenericDaoPackage());
-					config.setPaqueteGenericService(ProjectFolderConfiguration.getGenericServicePackage());
+					config.setKeyHolder(ScriptBuilder.getKeyHolder(entity));
+					
+					//TODO: Hacer dinamico el keyholder
+					config.setPrimaryKeySet(
+							ScriptBuilder.getDynamicIDAssignation(entity.getPrimaryKeys().get(0), entity));
+					
+					config.setPrimaryKeyParameters(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.PARAMETER));
+					config.setPrimaryKeySQL(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.WHERE_SCRIPT));
+					config.setPrimaryKeysSQLQuestion(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.WHERE_SCRIPT_WITH_QUESTION_MARK));
+					config.setPrimaryKeyNames(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.ONLY_NAMES));
+					config.setPrimaryKeyParametersWithPathVariable(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.PARAMETER_WITH_PATH_VARIABLE));
+					config.setPrimaryKeysForMapping(ScriptBuilder.getPrimaryKeys(entity,PrimaryKeyScriptType.FOR_GET_MAPPING));
+					
 					FileCreator obj = new FileCreator(config);
 					if (obj.createFilesDaoAndService())
 						counter++;

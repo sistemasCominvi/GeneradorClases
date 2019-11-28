@@ -2,6 +2,7 @@ package com.rever.files.scriptbuilder;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.CaseFormat;
@@ -20,22 +21,44 @@ import com.rever.folders.ProjectFolderConfiguration;
 public class ScriptBuilder {
 
 	/**
-	 * @param entities           las entidades
+	 * @param entity             las entidades
 	 * @param withQuestionSymbol si se quiere en vez de los nombres el signo de
 	 *                           interrogaci�n
 	 * @return las columnas de la entidad concatenadas columna1,columna2 o si es
 	 *         signo ?,?
 	 */
-	public static String getAllColumns(Entity entities, boolean withQuestionSymbol) {
+	public static String getAllColumns(Entity entity, boolean withQuestionSymbol) {
 		String columns = "";
-		if (!entities.getColumns().isEmpty()) {
-			for (Column column : entities.getColumns()) {
-				if (column.getColumnType() != ColumnType.ID)
+		if (!entity.getColumns().isEmpty()) {
+			for (Column column : entity.getColumns()) {
+				if (column.getColumnType() != ColumnType.ID || !entityHasIdentity(entity)) {
 					columns += (!withQuestionSymbol ? column.getName() : "?") + ",";
+				}
 			}
 			columns = columns.substring(0, columns.length() - 1);
 		}
 		return columns;
+	}
+
+	/**
+	 * @param entity la entidad
+	 * @return su keyholder dependiendo si tiene autoincrementable
+	 */
+	public static String getKeyHolder(Entity entity) {
+
+		return entityHasIdentity(entity) ? " KeyHolder keyHolder = new GeneratedKeyHolder();\r\n" + "        \r\n"
+				+ "        jdbcTemplate.update(new PreparedStatementCreator() {\r\n" + "            @Override\r\n"
+				+ "            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {\r\n"
+				+ "                PreparedStatement ps = con.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);\r\n"
+				+ "                @preparedSetStatement\r\n" + "                return ps;\r\n" + "            }\r\n"
+				+ "        }, keyHolder);\r\n" + "        \r\n" + "         @nameClassMin.@primarySetKey" :
+
+				"        \r\n" + "        jdbcTemplate.update(new PreparedStatementCreator() {\r\n"
+						+ "            @Override\r\n"
+						+ "            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {\r\n"
+						+ "                PreparedStatement ps = con.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);\r\n"
+						+ "                @preparedSetStatement\r\n" + "                return ps;\r\n"
+						+ "            }\r\n" + "        });\r\n";
 	}
 
 	/**
@@ -45,7 +68,7 @@ public class ScriptBuilder {
 	public static String getAllColumnsForSQLSet(Entity entity) {
 		String columns = "";
 		for (Column column : entity.getColumns()) {
-			if (column.getColumnType() != ColumnType.ID)
+			if (column.getColumnType() != ColumnType.ID/* || !entityHasIdentity(entity) */)
 				columns += column.getName() + " = ?,";
 		}
 		columns = columns.substring(0, columns.length() - 1);
@@ -68,7 +91,7 @@ public class ScriptBuilder {
 		 * Extrae los campos de ese modelo (el tipo de dato y el nombre)
 		 * 
 		 */
-		Field[] fields = getEntityFields(entity, false);
+		Field[] fields = getEntityFields(entity, !entityHasIdentity(entity));
 		/*
 		 * Inicializa el contador de posicion en el PS
 		 */
@@ -94,6 +117,20 @@ public class ScriptBuilder {
 	}
 
 	/**
+	 * @param entity la entidad
+	 * @return si la entidad tiene autoincrementable
+	 */
+	private static boolean entityHasIdentity(Entity entity) {
+		for (Column column : entity.getColumns()) {
+			if (column.getColumnType() == ColumnType.ID)
+				if (column.getColumnDefinition().contains("identity"))
+					return true;
+
+		}
+		return false;
+	}
+
+	/**
 	 * @return un String con los(as) campos/columnas de la entidad en forma de
 	 *         entidad.getNombreCampo(),
 	 */
@@ -101,8 +138,34 @@ public class ScriptBuilder {
 
 		String columns = "";
 
-		Field[] fields = getEntityFields(entity, false);
+		/*
+		 * Primero se agregan los campos sin id (para cuadrar con los signos de
+		 * interrogacion de jdbc
+		 */
 
+		Field[] fields = getEntityFields(entity, false);//todos los campos sin llaves primarias
+		Field[] allFields = getEntityFields(entity, true);//todos con llaves primarias
+		List<Field> onlyIdsFields = new ArrayList<>();
+
+		/*
+		 * Agrega ahora las llaves primarias (con las que se definen los where del
+		 * update)
+		 */
+		for (int i = 0; i < allFields.length; i++)
+			for (Column column : entity.getPrimaryKeys())
+				if (allFields[i].getName().equals(column.getName()))
+					onlyIdsFields.add(allFields[i]);
+		/*
+		 * Une la lista de campos, con la lista de llaves primarias
+		 */
+		List<Field> orderedFields = new ArrayList<>();
+		Collections.addAll(orderedFields, fields);
+		orderedFields.addAll(onlyIdsFields);
+
+		fields = orderedFields.toArray(new Field[orderedFields.size()]);
+		/*
+		 * Ahora si forma el codigo
+		 */
 		for (int i = 0; i < fields.length; i++) {
 			String getType = fields[i].getType().toString().contains("Boolean")
 					|| fields[i].getType().toString().contains("boolean") ? ".is" : ".get";
@@ -404,12 +467,88 @@ public class ScriptBuilder {
 	}
 
 	/**
-	 * Convierte las mayusculas en la misma letra con un guion bajo atras.
-	 * ejemplo: columnaUno a columna_uno
+	 * Convierte las mayusculas en la misma letra con un guion bajo atras. ejemplo:
+	 * columnaUno a columna_uno
+	 * 
 	 * @param name el texto a convertir
 	 * @return
 	 */
-	public static String convertToSQLFormat(String name) {		
+	public static String convertToSQLFormat(String name) {
 		return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
 	}
+
+	/**
+	 * Devuelve el string formado de las llaves primarias dependiendo el parametro
+	 * tipo eg: Tipo PARAMETER: Long llave1, Long llave2 Tipo SQL_SCRIPT: "where
+	 * llave1="+llave1+" and llave2="+llave2 "where llave1=? and llave2=?"
+	 * llave1,llave2,llave3
+	 * 
+	 * @param entity la entidad
+	 * @param type   el tipo de script (variable, sql script, nombres)
+	 * @return el codigo formado de las N llaves primarias.
+	 */
+	public static String getPrimaryKeys(Entity entity, PrimaryKeyScriptType type) {
+		String result = "";
+		try {
+			for (Column column : entity.getPrimaryKeys()) {
+				switch (type) {
+				case PARAMETER:
+					result += "Long " + column.getName() + ",";
+					break;
+				case WHERE_SCRIPT:
+					result += convertToSQLFormat(column.getName()) + "=\"+" + column.getName() + "+\" and ";
+					break;
+				case WHERE_SCRIPT_WITH_QUESTION_MARK:
+					result += convertToSQLFormat(column.getName()) + "= ? and ";
+					break;
+				case ONLY_NAMES:
+					result += column.getName() + ",";
+					break;
+				case PARAMETER_WITH_PATH_VARIABLE:
+					result += "@PathVariable Long " + column.getName() + ",";
+					break;
+				case FOR_GET_MAPPING:
+					result+="/{"+column.getName()+"}";
+					break;
+				}
+			}
+			int cut = 0;
+			;
+			switch (type) {
+			case PARAMETER:
+			case PARAMETER_WITH_PATH_VARIABLE:
+			case ONLY_NAMES:
+				cut = 1;
+				break;
+			case WHERE_SCRIPT:
+				cut = 7;
+				break;
+			case WHERE_SCRIPT_WITH_QUESTION_MARK:
+				cut = 5;
+				break;
+			}
+			result = result.substring(0, result.length() - cut);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * Constantes del tipo de script de llaves primarias
+	 * 
+	 * @author angelo.loza
+	 *
+	 *
+	 */
+	public enum PrimaryKeyScriptType {
+		PARAMETER,
+		WHERE_SCRIPT,
+		WHERE_SCRIPT_WITH_QUESTION_MARK,
+		ONLY_NAMES, 
+		PARAMETER_WITH_PATH_VARIABLE,
+		FOR_GET_MAPPING
+	}
+	
 }

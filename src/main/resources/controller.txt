@@ -35,13 +35,13 @@ public class @nameClaseController {
 	}
 	
 	
-	@GetMapping("/{@primaryKey}")
-	public @nameClase buscar@nameClase(@PathVariable Long @primaryKey) {
+	@GetMapping("@getMappingKeys")
+	public @nameClase buscar@nameClase(@primaryListKeysParameters) {
 		
 		@nameClase @nameClassMin = null;
 		
 		try {
-			@nameClassMin = @nameClassMinService.findById(@primaryKey);
+			@nameClassMin = @nameClassMinService.findById(@primaryNameKey);
 		}catch (DataAccessException e) {
 			return null;
 		}
@@ -67,13 +67,13 @@ public class @nameClaseController {
 		
 	}
 	
-	@PutMapping("/{@primaryKey}")
-	public ResponseEntity<?> actualizar(@RequestBody @nameClase @nameClassMin, @PathVariable Long @primaryKey) {
+	@PutMapping("@getMappingKeys")
+	public ResponseEntity<?> actualizar(@RequestBody @nameClase @nameClassMin, @primaryListKeysParameters) {
 		
 		Map<String, Object> map = new HashMap<>();
 		try {
-			@nameClassMinService.update(@nameClassMin, @primaryKey);
-			@nameClassMin = @nameClassMinService.findById(@primaryKey);
+			@nameClassMinService.update(@nameClassMin, @primaryNameKey);
+			@nameClassMin = @nameClassMinService.findById(@primaryNameKey);
 		}catch (DataAccessException e) {
 			map.put("mensaje", "Error al insertar el registro");
 			map.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
@@ -84,19 +84,19 @@ public class @nameClaseController {
 		
 	}
 	
-	@DeleteMapping("/{@primaryKey}")
-	public ResponseEntity<?> eliminar@nameClase(@PathVariable Long @primaryKey) {
+	@DeleteMapping("@getMappingKeys")
+	public ResponseEntity<?> eliminar@nameClase(@primaryListKeysParameters) {
 		
 		Map<String, Object> map = new HashMap<>();
 		try {
-			@nameClassMinService.removeById(@primaryKey);
+			@nameClassMinService.removeById(@primaryNameKey);
 		}catch (DataAccessException e) {
 			map.put("mensaje", "Error al insertar el registro");
 			map.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		map.put("mensaje", "El registro se elimino con éxito");
+		map.put("mensaje", "El registro se elimino con exito");
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 		
 	}

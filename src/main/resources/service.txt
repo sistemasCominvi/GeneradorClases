@@ -24,8 +24,8 @@ public class @nameClaseService implements I@nameClaseService{
 
 	@Transactional(readOnly = true)
 	@Override
-	public @nameClase findById(Long @primaryKey) {
-		return @nameClassMinDao.findById(@primaryKey);
+	public @nameClase findById(@primaryListKeysParameters) {
+		return @nameClassMinDao.findById(@primaryNameKey);
 	}
 
 	@Transactional
@@ -42,14 +42,14 @@ public class @nameClaseService implements I@nameClaseService{
 
 	@Transactional
 	@Override
-	public @nameClase update(@nameClase @nameClassMin, Long @primaryKey) {
-		return @nameClassMinDao.update(@nameClassMin, @primaryKey);
+	public @nameClase update(@nameClase @nameClassMin, @primaryListKeysParameters) {
+		return @nameClassMinDao.update(@nameClassMin, @primaryNameKey);
 	}
 
 	@Transactional
 	@Override
-	public Boolean removeById(Long @primaryKey) {
-		return @nameClassMinDao.removeById(@primaryKey);
+	public Boolean removeById(@primaryListKeysParameters) {
+		return @nameClassMinDao.removeById(@primaryNameKey);
 	}
 
 }
