@@ -30,9 +30,11 @@ public class Configuracion {
 	private String primaryKeySQL;
 	private String keyHolder;
 	private String primaryKeyParameters;
+	private String primaryKeyParametersWithPathVariable;
 	private String primaryKeysSQL;
 	private String primaryKeysSQLQuestion;
 	private String primaryKeyNames;
+	private String primaryKeysForMapping;
 	
 	public Configuracion(String nameClase, String paqueteEntity, String tipeId) {
 		this.nameClase = nameClase;
@@ -332,6 +334,22 @@ public class Configuracion {
 
 	public void setPrimaryKeyNames(String primaryKeyNames) {
 		this.primaryKeyNames = primaryKeyNames;
+	}
+
+	public String getPrimaryKeyParametersWithPathVariable() {
+		return primaryKeyParametersWithPathVariable;
+	}
+
+	public void setPrimaryKeyParametersWithPathVariable(String primaryKeyParametersWithPathVariable) {
+		this.primaryKeyParametersWithPathVariable = primaryKeyParametersWithPathVariable;
+	}
+
+	public String getPrimaryKeysForMapping() {
+		return primaryKeysForMapping;
+	}
+
+	public void setPrimaryKeysForMapping(String primaryKeysForMapping) {
+		this.primaryKeysForMapping = primaryKeysForMapping;
 	}
 
 }

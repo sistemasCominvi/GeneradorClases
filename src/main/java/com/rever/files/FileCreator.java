@@ -152,7 +152,17 @@ public class FileCreator {
 			controller = controller.replaceAll("@nameModel", this.configuracion.getModelName());
 			controller = controller.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
 			controller = controller.replaceAll("@paqueteService", this.configuracion.getPaqueteServiceImpl());
+			
+			controller = controller.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParametersWithPathVariable());
+			controller = controller.replaceAll("@primaryNameKey", this.configuracion.getPrimaryKeyNames());
+			controller = controller.replaceAll("@getMappingKeys", this.configuracion.getPrimaryKeysForMapping());
 
+			try {
+				controller = new Formatter().formatSource(controller);
+			} catch (FormatterException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			try {
 				writeFile(controller, fileController);
 			} catch (IOException e) {
@@ -173,7 +183,15 @@ public class FileCreator {
 			service = service.replaceAll("@namePluralClass", this.configuracion.getNameClassMin() + "s");
 			service = service.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
 			service = service.replaceAll("@nameModel", this.configuracion.getModelName());
-
+			
+			service = service.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParameters());
+			service = service.replaceAll("@primaryNameKey", this.configuracion.getPrimaryKeyNames());
+			try {
+				service = new Formatter().formatSource(service);
+			} catch (FormatterException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			try {
 				writeFile(service, FileService);
 			} catch (IOException e) {
@@ -199,6 +217,15 @@ public class FileCreator {
 			serviceImpl = serviceImpl.replaceAll("@namePluralClass", this.configuracion.getNameClassMin() + "s");
 			serviceImpl = serviceImpl.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
 			serviceImpl = serviceImpl.replaceAll("@nameModel", this.configuracion.getModelName());
+			
+			serviceImpl = serviceImpl.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParameters());
+			serviceImpl = serviceImpl.replaceAll("@primaryNameKey", this.configuracion.getPrimaryKeyNames());
+			try {
+				serviceImpl = new Formatter().formatSource(serviceImpl);
+			} catch (FormatterException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			try {
 				writeFile(serviceImpl, fileServiceImpl);
 			} catch (IOException e) {

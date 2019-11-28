@@ -6,10 +6,10 @@ import @nameModel.@nameClase;
 public interface I@nameClaseService {
 
 	List<@nameClase> findAll();
-	@nameClase findById(Long @primaryKey);
+	@nameClase findById(@primaryListKeysParameters);
 	@nameClase save(@nameClase @nameClassMin);
 	Boolean saveAll(List<@nameClase> @nameClassMins);
-	@nameClase update(@nameClase @nameClassMin, Long @primaryKey);
-	Boolean removeById(Long @primaryKey);
+	@nameClase update(@nameClase @nameClassMin, @primaryListKeysParameters);
+	Boolean removeById(@primaryListKeysParameters);
 
 }

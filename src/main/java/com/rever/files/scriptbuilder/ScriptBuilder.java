@@ -2,6 +2,7 @@ package com.rever.files.scriptbuilder;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.CaseFormat;
@@ -67,7 +68,7 @@ public class ScriptBuilder {
 	public static String getAllColumnsForSQLSet(Entity entity) {
 		String columns = "";
 		for (Column column : entity.getColumns()) {
-			if (column.getColumnType() != ColumnType.ID || !entityHasIdentity(entity))
+			if (column.getColumnType() != ColumnType.ID/* || !entityHasIdentity(entity) */)
 				columns += column.getName() + " = ?,";
 		}
 		columns = columns.substring(0, columns.length() - 1);
@@ -137,8 +138,34 @@ public class ScriptBuilder {
 
 		String columns = "";
 
-		Field[] fields = getEntityFields(entity, !entityHasIdentity(entity));
+		/*
+		 * Primero se agregan los campos sin id (para cuadrar con los signos de
+		 * interrogacion de jdbc
+		 */
 
+		Field[] fields = getEntityFields(entity, false);//todos los campos sin llaves primarias
+		Field[] allFields = getEntityFields(entity, true);//todos con llaves primarias
+		List<Field> onlyIdsFields = new ArrayList<>();
+
+		/*
+		 * Agrega ahora las llaves primarias (con las que se definen los where del
+		 * update)
+		 */
+		for (int i = 0; i < allFields.length; i++)
+			for (Column column : entity.getPrimaryKeys())
+				if (allFields[i].getName().equals(column.getName()))
+					onlyIdsFields.add(allFields[i]);
+		/*
+		 * Une la lista de campos, con la lista de llaves primarias
+		 */
+		List<Field> orderedFields = new ArrayList<>();
+		Collections.addAll(orderedFields, fields);
+		orderedFields.addAll(onlyIdsFields);
+
+		fields = orderedFields.toArray(new Field[orderedFields.size()]);
+		/*
+		 * Ahora si forma el codigo
+		 */
 		for (int i = 0; i < fields.length; i++) {
 			String getType = fields[i].getType().toString().contains("Boolean")
 					|| fields[i].getType().toString().contains("boolean") ? ".is" : ".get";
@@ -450,6 +477,16 @@ public class ScriptBuilder {
 		return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
 	}
 
+	/**
+	 * Devuelve el string formado de las llaves primarias dependiendo el parametro
+	 * tipo eg: Tipo PARAMETER: Long llave1, Long llave2 Tipo SQL_SCRIPT: "where
+	 * llave1="+llave1+" and llave2="+llave2 "where llave1=? and llave2=?"
+	 * llave1,llave2,llave3
+	 * 
+	 * @param entity la entidad
+	 * @param type   el tipo de script (variable, sql script, nombres)
+	 * @return el codigo formado de las N llaves primarias.
+	 */
 	public static String getPrimaryKeys(Entity entity, PrimaryKeyScriptType type) {
 		String result = "";
 		try {
@@ -465,13 +502,21 @@ public class ScriptBuilder {
 					result += convertToSQLFormat(column.getName()) + "= ? and ";
 					break;
 				case ONLY_NAMES:
-					result += column.getName()+",";
+					result += column.getName() + ",";
+					break;
+				case PARAMETER_WITH_PATH_VARIABLE:
+					result += "@PathVariable Long " + column.getName() + ",";
+					break;
+				case FOR_GET_MAPPING:
+					result+="/{"+column.getName()+"}";
 					break;
 				}
 			}
-			int cut = 0;;
+			int cut = 0;
+			;
 			switch (type) {
 			case PARAMETER:
+			case PARAMETER_WITH_PATH_VARIABLE:
 			case ONLY_NAMES:
 				cut = 1;
 				break;
@@ -480,7 +525,6 @@ public class ScriptBuilder {
 				break;
 			case WHERE_SCRIPT_WITH_QUESTION_MARK:
 				cut = 5;
-
 				break;
 			}
 			result = result.substring(0, result.length() - cut);
@@ -490,7 +534,21 @@ public class ScriptBuilder {
 		return result;
 	}
 
+	/**
+	 * 
+	 * Constantes del tipo de script de llaves primarias
+	 * 
+	 * @author angelo.loza
+	 *
+	 *
+	 */
 	public enum PrimaryKeyScriptType {
-		PARAMETER, WHERE_SCRIPT, WHERE_SCRIPT_WITH_QUESTION_MARK, ONLY_NAMES
+		PARAMETER,
+		WHERE_SCRIPT,
+		WHERE_SCRIPT_WITH_QUESTION_MARK,
+		ONLY_NAMES, 
+		PARAMETER_WITH_PATH_VARIABLE,
+		FOR_GET_MAPPING
 	}
+	
 }
