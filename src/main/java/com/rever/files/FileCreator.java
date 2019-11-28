@@ -105,7 +105,6 @@ public class FileCreator {
 			String dao = readFileToString("repository.txt", null);
 			dao = dao.replaceAll("@keyHolder", this.configuracion.getKeyHolder());
 			dao = dao.replaceAll("@paqueteDao", this.configuracion.getPaqueteDao());
-			dao = dao.replaceAll("@paqueteGenericDao", this.configuracion.getPaqueteGenericDao());
 			dao = dao.replaceAll("@paqueteClass", this.configuracion.getPaqueteEntity());
 			dao = dao.replaceAll("@nameClaseDao", this.configuracion.getNameClaseDao());
 			dao = dao.replaceAll("@project", this.configuracion.getProject());
@@ -113,7 +112,6 @@ public class FileCreator {
 			dao = dao.replaceAll("@namePluralClass", this.configuracion.getNameClassMin() + "s");
 			dao = dao.replaceAll("@allFields", this.configuracion.getAllFields());
 			dao = dao.replaceAll("@allQuestionFields", this.configuracion.getAllQuestionFields());
-			//dao = dao.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
 			dao = dao.replaceAll("@primarySQLKeys", this.configuracion.getPrimaryKeySQL());
 			dao = dao.replaceAll("@setScript", this.configuracion.getSetSQLScript());
 			dao = dao.replaceAll("@preparedGetStatement", configuracion.getPreparedStatementOnlyGet());
@@ -150,7 +148,6 @@ public class FileCreator {
 			controller = controller.replaceAll("@nameClase", this.configuracion.getNameClase());
 			controller = controller.replaceAll("@nameClassMin", this.configuracion.getNameClassMin());
 			controller = controller.replaceAll("@nameModel", this.configuracion.getModelName());
-			controller = controller.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
 			controller = controller.replaceAll("@paqueteService", this.configuracion.getPaqueteServiceImpl());
 			
 			controller = controller.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParametersWithPathVariable());
@@ -174,14 +171,11 @@ public class FileCreator {
 			String service = readFileToString("service.txt", null);
 			service = service.replaceAll("@paqueteServiceImpl", this.configuracion.getPaqueteServiceImpl());
 			service = service.replaceAll("@paqueteService", this.configuracion.getPaqueteService());
-			service = service.replaceAll("@paqueteGenericService", this.configuracion.getPaqueteGenericService());
 			service = service.replaceAll("@paqueteClass", this.configuracion.getPaqueteEntity());
 			service = service.replaceAll("@nameClaseService", this.configuracion.getNameClaseService());
 			service = service.replaceAll("@nameClase", this.configuracion.getNameClase());
-			service = service.replaceAll("@tipeId", this.configuracion.getTipeId());
 			service = service.replaceAll("@nameClassMin", this.configuracion.getNameClassMin());
 			service = service.replaceAll("@namePluralClass", this.configuracion.getNameClassMin() + "s");
-			service = service.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
 			service = service.replaceAll("@nameModel", this.configuracion.getModelName());
 			
 			service = service.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParameters());
@@ -202,9 +196,7 @@ public class FileCreator {
 			String fileServiceImpl = urlServiceImpl + "I" + this.configuracion.getNameClase() + "Service.java";
 			String serviceImpl = readFileToString("serviceImpl.txt", null);
 			serviceImpl = serviceImpl.replaceAll("@paqueteServiceImpl", this.configuracion.getPaqueteServiceImpl());
-			serviceImpl = serviceImpl.replaceAll("@paqueteGenericDao", this.configuracion.getPaqueteGenericDao());
-			serviceImpl = serviceImpl.replaceAll("@paqueteGenericService",
-					this.configuracion.getPaqueteGenericService());
+
 			serviceImpl = serviceImpl.replaceAll("@paqueteService", this.configuracion.getPaqueteService());
 			serviceImpl = serviceImpl.replaceAll("@paqueteClass", this.configuracion.getPaqueteEntity());
 			serviceImpl = serviceImpl.replaceAll("@nameClaseServiceImpl", this.configuracion.getNameClaseServiceImpl());
@@ -212,10 +204,8 @@ public class FileCreator {
 			serviceImpl = serviceImpl.replaceAll("@nameClaseLowerService",
 					this.configuracion.getNameClaseLowerService());
 			serviceImpl = serviceImpl.replaceAll("@nameClase", this.configuracion.getNameClase());
-			serviceImpl = serviceImpl.replaceAll("@tipeId", this.configuracion.getTipeId());
 			serviceImpl = serviceImpl.replaceAll("@nameClassMin", this.configuracion.getNameClassMin());
 			serviceImpl = serviceImpl.replaceAll("@namePluralClass", this.configuracion.getNameClassMin() + "s");
-			serviceImpl = serviceImpl.replaceAll("@primaryKey", this.configuracion.getPrimaryKey());
 			serviceImpl = serviceImpl.replaceAll("@nameModel", this.configuracion.getModelName());
 			
 			serviceImpl = serviceImpl.replaceAll("@primaryListKeysParameters", this.configuracion.getPrimaryKeyParameters());
