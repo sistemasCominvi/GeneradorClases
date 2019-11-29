@@ -118,12 +118,13 @@ public class ScriptBuilder {
 			if (fields[i].getName().equals(FECHA_HORA_MOD_FIELD) || fields[i].getName().equals(FECHA_HORA_ALTA_FIELD))
 				continue;
 			if (foreign != null) {
-				preparedStatement += "ps.set" + /*getDebuggedField(getIdForeign(fields[i]).getField(), false)*/"Object" + "("
-						+ (counter) + ", " +buildGet(entity, fields[i])+"!= null ?"+ buildGet(entity, fields[i]) + getForeignKeyPrimaryKeyGet(fields[i])
-						+ " : null);\n";
+				preparedStatement += "ps.set"
+						+ /* getDebuggedField(getIdForeign(fields[i]).getField(), false) */"Object" + "(" + (counter)
+						+ ", " + buildGet(entity, fields[i]) + "!= null ?" + buildGet(entity, fields[i])
+						+ getForeignKeyPrimaryKeyGet(fields[i]) + " : null);\n";
 			} else {
-				preparedStatement += "ps.set" + /*getDebuggedField(fields[i], false)*/"Object" + "(" + (counter) + ", "
-						+ buildGet(entity, fields[i]) + ");\n";
+				preparedStatement += "ps.set" + /* getDebuggedField(fields[i], false) */"Object" + "(" + (counter)
+						+ ", " + buildGet(entity, fields[i]) + ");\n";
 			}
 			counter++;
 		}
@@ -369,7 +370,7 @@ public class ScriptBuilder {
 				|| field.getType().toString().contains("boolean") ? ".is" : ".get";
 		String baseGet = getSingularEntityName(entity) + getType + capitalizeFirstLetter(field.getName()) + "()";
 		if (getDebuggedField(field, false).equals("Date"))
-			return baseGet+" != null ? new java.sql.Timestamp(" + baseGet + ".getTime()) : null";
+			return baseGet + " != null ? new java.sql.Timestamp(" + baseGet + ".getTime()) : null";
 		else
 			return baseGet;
 	}
@@ -446,8 +447,7 @@ public class ScriptBuilder {
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
 						+ "(new " + ProjectFolderConfiguration.getModelPackage() + "."
 						+ capitalizeFirstLetter(getDebuggedField(fields[i], false)) + "(rs.get"
-						+ getDebuggedField(foreign.getField(), false) + "(\"" + actualColumn.getName()
-						+ "\"))); \n";
+						+ getDebuggedField(foreign.getField(), false) + "(\"" + actualColumn.getName() + "\"))); \n";
 			} else {
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
 						+ "(rs.get" + isDate(getDebuggedField(fields[i], false)) + "(\"" + fields[i].getName()
@@ -460,13 +460,13 @@ public class ScriptBuilder {
 	/**
 	 * Obtiene la columna correspondiente al campo
 	 * 
-	 * @param field el campo a obtener
+	 * @param field  el campo a obtener
 	 * @param entity la entidad para buscar en ella
 	 * @return la columna correspondiente a ese campo
 	 */
 	private static Column getColumnByField(Field field, Entity entity) {
-		for(Column column : entity.getColumns())
-			if(column.getFieldName().equals(field.getName()))
+		for (Column column : entity.getColumns())
+			if (column.getFieldName().equals(field.getName()))
 				return column;
 		return null;
 	}
@@ -536,9 +536,12 @@ public class ScriptBuilder {
 	 */
 	public static Field getFieldByColummn(Column column, Entity entity, boolean withIds) {
 		Field[] fields = getEntityFields(entity, withIds);
-		for (int i = 0; i < fields.length; i++)
+		for (int i = 0; i < fields.length; i++) {
 			if (fields[i].getName().equals(column.getName()))
 				return fields[i];
+			else if (fields[i].getName().equals(column.getFieldName()))
+				return fields[i];
+		}
 		return null;
 	}
 

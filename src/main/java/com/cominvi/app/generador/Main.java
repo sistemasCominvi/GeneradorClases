@@ -10,6 +10,7 @@ import com.cominvi.app.generador.files.XMLExtractor;
 import com.cominvi.app.generador.files.scriptbuilder.ScriptBuilder;
 import com.cominvi.app.generador.files.scriptbuilder.ScriptBuilder.PrimaryKeyScriptType;
 import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
+import com.cominvi.app.generador.frontend.FrontendGenerator;
 import com.cominvi.app.generador.pom.POMExplorer;
 import com.cominvi.app.generador.xml.Column;
 import com.cominvi.app.generador.xml.Entity;
@@ -34,6 +35,8 @@ public class Main {
 			 */
 			List<Entity> entities = new XMLExtractor(ProjectFolderConfiguration.getORMXMLAbsolutePath())
 					.extractEntities();
+			
+			FrontendGenerator.init();
 			/*
 			 * Recorre cada entity y genera su dao y servicio con su correspondiente
 			 * implementaci�n
@@ -81,6 +84,8 @@ public class Main {
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
+					
+					FrontendGenerator.createModel(entity);
 				}
 				System.out.println("Se genero la estructura dao,service,controller para " + counter + " de "
 						+ entities.size() + " entidades\nFallaron " + (entities.size() - counter));

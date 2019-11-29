@@ -32,6 +32,7 @@ import com.cominvi.app.commons.util.JsonDate;
 import com.cominvi.app.commons.util.UtilDate;
 import com.cominvi.app.generador.config.Configuracion;
 import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
+import com.cominvi.app.generador.frontend.FrontendGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -326,7 +327,7 @@ public class FileCreator {
 	 * @param pathFile la ruta
 	 * @throws IOException
 	 */
-	private void writeFile(String aString, String pathFile) throws IOException {
+	public static void writeFile(String aString, String pathFile) throws IOException {
 		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pathFile), "UTF-8"));
 		try {
 			out.write(aString);
@@ -374,6 +375,7 @@ public class FileCreator {
 		try {			
 			FileUtils.deleteDirectory(new File(ProjectFolderConfiguration.getBaseURI().replaceAll("\\\\/", "/")));
 			FileUtils.deleteDirectory(new File(ProjectFolderConfiguration.getModelPath().replaceAll("\\\\/", "/")));
+			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_PATH.replaceAll("\\\\/", "/")));
 			new File(ProjectFolderConfiguration.getORMXMLAbsolutePath().replaceAll("\\\\/", "/")).delete();
 
 		} catch (IOException e) {
