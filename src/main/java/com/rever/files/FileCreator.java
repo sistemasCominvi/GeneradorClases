@@ -25,7 +25,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.cominvi.app.commons.util.CustomCalendarDeserializer;
+import com.cominvi.app.commons.util.CustomDateSerializer;
+import com.cominvi.app.commons.util.JsonDate;
+import com.cominvi.app.commons.util.UtilDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
 import com.rever.config.Configuracion;
@@ -53,7 +59,7 @@ public class FileCreator {
 	 * Regresa el archivo dado como string
 	 * 
 	 * @param fileName el nombre del archivo
-	 * @param file el archivo
+	 * @param file     el archivo
 	 * @return el archivo leído en forma de String
 	 */
 	private String readFileToString(String fileName, File file) {
@@ -75,15 +81,18 @@ public class FileCreator {
 	}
 
 	/**
-	 * Agrega la anotacion de fecha JSON a los modelos 
+	 * Agrega la anotacion de fecha JSON a los modelos
 	 */
 	public void addJSONAnnotation() {
 		String entityPath = ProjectFolderConfiguration.getModelPath() + this.configuracion.getNameClase() + ".java";
 		File file = new File(entityPath);
 		String srcFile = readFileToString(null, file);
 
-		String importText = "java.util.*;\nimport com.fasterxml.jackson.annotation.JsonFormat;";
-		String annotationText = "@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = \"yyyy-MM-dd hh:mm:ss\")\nprivate Date";
+		String importText = "java.util.*;\nimport com.cominvi.app.commons.util.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\r\n"
+				+ "import com.fasterxml.jackson.databind.annotation.JsonSerialize;";
+		String annotationText = "@JsonSerialize(using = CustomDateSerializer.class)\r\n"
+				+ "  @JsonDeserialize(using = CustomCalendarDeserializer.class)\r\n"
+				+ "  @JsonDate(formatKey = UtilDate.FORMAT_STANDAR_DATE_WITH_HR_MIN_SS)\r\nprivate Date";
 
 		if (!srcFile.contains(importText))
 			srcFile = srcFile.replaceAll("java.util.*;", importText);
@@ -253,7 +262,7 @@ public class FileCreator {
 
 	/**
 	 * @param sourceFile archivo fuente
-	 * @param destFile archivo destino
+	 * @param destFile   archivo destino
 	 * @return exito
 	 */
 	public boolean move(String sourceFile, String destFile) {
@@ -312,9 +321,9 @@ public class FileCreator {
 	/**
 	 * Escribe un string en un archivo
 	 * 
-	 * @param aString el string a escribir
+	 * @param aString  el string a escribir
 	 * @param pathFile la ruta
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void writeFile(String aString, String pathFile) throws IOException {
 		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pathFile), "UTF-8"));

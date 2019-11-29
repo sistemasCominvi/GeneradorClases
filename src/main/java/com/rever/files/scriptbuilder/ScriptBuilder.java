@@ -369,7 +369,7 @@ public class ScriptBuilder {
 				|| field.getType().toString().contains("boolean") ? ".is" : ".get";
 		String baseGet = getSingularEntityName(entity) + getType + capitalizeFirstLetter(field.getName()) + "()";
 		if (getDebuggedField(field, false).equals("Date"))
-			return baseGet+" != null ? new java.sql.Date(" + baseGet + ".getTime()) : null";
+			return baseGet+" != null ? new java.sql.Timestamp(" + baseGet + ".getTime()) : null";
 		else
 			return baseGet;
 	}
