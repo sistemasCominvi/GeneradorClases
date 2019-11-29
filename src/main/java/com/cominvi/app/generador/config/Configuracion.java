@@ -1,4 +1,4 @@
-package com.rever.config;
+package com.cominvi.app.generador.config;
 
 /**
  * @author angelo.loza

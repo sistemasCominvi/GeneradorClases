@@ -1,16 +1,16 @@
-package com.rever.files.scriptbuilder;
+package com.cominvi.app.generador.files.scriptbuilder;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.cominvi.app.generador.files.XMLExtractor;
+import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
+import com.cominvi.app.generador.xml.Column;
+import com.cominvi.app.generador.xml.Entity;
+import com.cominvi.app.generador.xml.Column.ColumnType;
 import com.google.common.base.CaseFormat;
-import com.rever.files.XMLExtractor;
-import com.rever.files.xml.Column;
-import com.rever.files.xml.Column.ColumnType;
-import com.rever.files.xml.Entity;
-import com.rever.folders.ProjectFolderConfiguration;
 
 /**
  * Clase para construir la estructura del repositorio
@@ -118,11 +118,11 @@ public class ScriptBuilder {
 			if (fields[i].getName().equals(FECHA_HORA_MOD_FIELD) || fields[i].getName().equals(FECHA_HORA_ALTA_FIELD))
 				continue;
 			if (foreign != null) {
-				preparedStatement += "ps.set" + getDebuggedField(getIdForeign(fields[i]).getField(), false) + "("
-						+ (counter) + ", " + buildGet(entity, fields[i]) + getForeignKeyPrimaryKeyGet(fields[i])
-						+ ");\n";
+				preparedStatement += "ps.set" + /*getDebuggedField(getIdForeign(fields[i]).getField(), false)*/"Object" + "("
+						+ (counter) + ", " +buildGet(entity, fields[i])+"!= null ?"+ buildGet(entity, fields[i]) + getForeignKeyPrimaryKeyGet(fields[i])
+						+ " : null);\n";
 			} else {
-				preparedStatement += "ps.set" + getDebuggedField(fields[i], false) + "(" + (counter) + ", "
+				preparedStatement += "ps.set" + /*getDebuggedField(fields[i], false)*/"Object" + "(" + (counter) + ", "
 						+ buildGet(entity, fields[i]) + ");\n";
 			}
 			counter++;
@@ -369,7 +369,7 @@ public class ScriptBuilder {
 				|| field.getType().toString().contains("boolean") ? ".is" : ".get";
 		String baseGet = getSingularEntityName(entity) + getType + capitalizeFirstLetter(field.getName()) + "()";
 		if (getDebuggedField(field, false).equals("Date"))
-			return "new java.sql.Date(" + baseGet + ".getTime())";
+			return baseGet+" != null ? new java.sql.Timestamp(" + baseGet + ".getTime()) : null";
 		else
 			return baseGet;
 	}

@@ -1,4 +1,4 @@
-package com.rever.pom;
+package com.cominvi.app.generador.pom;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

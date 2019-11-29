@@ -1,9 +1,9 @@
-package com.rever.files.xml;
+package com.cominvi.app.generador.xml;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rever.files.xml.Column.ColumnType;
+import com.cominvi.app.generador.xml.Column.ColumnType;
 
 /**
  * Clase para instanciar objetos de tipo entidad desde el orm.xml

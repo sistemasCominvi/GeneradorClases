@@ -1,7 +1,7 @@
-package com.rever.folders;
+package com.cominvi.app.generador.folders;
 
-import com.rever.files.XMLExtractor;
-import com.rever.pom.POMExplorer;
+import com.cominvi.app.generador.files.XMLExtractor;
+import com.cominvi.app.generador.pom.POMExplorer;
 
 /**
  * @author angelo.loza Clase para obtener carpetas del proyecto
