@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -282,7 +283,7 @@ public class FileCreator {
 	/**
 	 * @param path el path a eliminar
 	 */
-	public void deleteDirectoryRecursion(Path path) {
+	private static void deleteDirectoryRecursion(Path path) {
 		try {
 			if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
 				try (DirectoryStream<Path> entries = Files.newDirectoryStream(path)) {
@@ -364,6 +365,38 @@ public class FileCreator {
 			// e.printStackTrace();
 		}
 		return entities;
+	}
+
+	/**
+	 * Borra los archivos
+	 */
+	public static void deleteAll() {
+		try {			
+			FileUtils.deleteDirectory(new File(ProjectFolderConfiguration.getBaseURI().replaceAll("\\\\/", "/")));
+			FileUtils.deleteDirectory(new File(ProjectFolderConfiguration.getModelPath().replaceAll("\\\\/", "/")));
+			new File(ProjectFolderConfiguration.getORMXMLAbsolutePath().replaceAll("\\\\/", "/")).delete();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	/**
+	 * @param directoryToBeDeleted
+	 * @return
+	 */
+	private static boolean deleteDirectory(File directoryToBeDeleted) {
+		System.out.println("Limpiando archivos de la ruta:" + directoryToBeDeleted.getAbsolutePath() + "...");
+		File[] allContents = directoryToBeDeleted.listFiles();
+		if (allContents != null)
+			for (File file : allContents)
+				System.out.println(
+						"Borrando " + file.getAbsolutePath() + ": " + (deleteDirectory(file) ? " exitoso" : " fallo"));
+		else
+			System.out.println("No se encontraron archivos.");
+
+		return directoryToBeDeleted.delete();
 	}
 
 }
