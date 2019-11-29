@@ -1,18 +1,18 @@
-package com.rever;
+package com.cominvi.app.generador;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rever.config.Configuracion;
-import com.rever.files.FileCreator;
-import com.rever.files.XMLExtractor;
-import com.rever.files.scriptbuilder.ScriptBuilder;
-import com.rever.files.scriptbuilder.ScriptBuilder.PrimaryKeyScriptType;
-import com.rever.files.xml.Column;
-import com.rever.files.xml.Entity;
-import com.rever.folders.ProjectFolderConfiguration;
-import com.rever.pom.POMExplorer;
+import com.cominvi.app.generador.config.Configuracion;
+import com.cominvi.app.generador.files.FileCreator;
+import com.cominvi.app.generador.files.XMLExtractor;
+import com.cominvi.app.generador.files.scriptbuilder.ScriptBuilder;
+import com.cominvi.app.generador.files.scriptbuilder.ScriptBuilder.PrimaryKeyScriptType;
+import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
+import com.cominvi.app.generador.pom.POMExplorer;
+import com.cominvi.app.generador.xml.Column;
+import com.cominvi.app.generador.xml.Entity;
 
 /**
  * @author angelo.loza

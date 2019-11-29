@@ -1,4 +1,4 @@
-package com.rever.files;
+package com.cominvi.app.generador.files;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,13 +29,13 @@ import com.cominvi.app.commons.util.CustomCalendarDeserializer;
 import com.cominvi.app.commons.util.CustomDateSerializer;
 import com.cominvi.app.commons.util.JsonDate;
 import com.cominvi.app.commons.util.UtilDate;
+import com.cominvi.app.generador.config.Configuracion;
+import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
-import com.rever.config.Configuracion;
-import com.rever.folders.ProjectFolderConfiguration;
 
 /**
  * Clase para crear los archivos y reemplazar sus etiquetas con la configuracion

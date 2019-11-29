@@ -1,4 +1,4 @@
-package com.rever.files;
+package com.cominvi.app.generador.files;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,9 +13,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.rever.files.xml.Column;
-import com.rever.files.xml.Column.ColumnType;
-import com.rever.files.xml.Entity;
+import com.cominvi.app.generador.xml.Column;
+import com.cominvi.app.generador.xml.Entity;
+import com.cominvi.app.generador.xml.Column.ColumnType;
 
 /**
  * 

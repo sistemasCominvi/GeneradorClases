@@ -1,16 +1,16 @@
-package com.rever.files.scriptbuilder;
+package com.cominvi.app.generador.files.scriptbuilder;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.cominvi.app.generador.files.XMLExtractor;
+import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
+import com.cominvi.app.generador.xml.Column;
+import com.cominvi.app.generador.xml.Entity;
+import com.cominvi.app.generador.xml.Column.ColumnType;
 import com.google.common.base.CaseFormat;
-import com.rever.files.XMLExtractor;
-import com.rever.files.xml.Column;
-import com.rever.files.xml.Column.ColumnType;
-import com.rever.files.xml.Entity;
-import com.rever.folders.ProjectFolderConfiguration;
 
 /**
  * Clase para construir la estructura del repositorio

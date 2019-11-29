@@ -1,4 +1,4 @@
-package com.rever.files.xml;
+package com.cominvi.app.generador.xml;
 
 /**
  * Clase para instanciar objetos de tipo columna (obtenida de orm.xml)
