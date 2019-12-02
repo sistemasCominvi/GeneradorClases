@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.cominvi.app.generador.files.XMLExtractor;
 import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
+import com.cominvi.app.generador.frontend.FrontendGenerator;
 import com.cominvi.app.generador.xml.Column;
 import com.cominvi.app.generador.xml.Entity;
 import com.cominvi.app.generador.xml.Column.ColumnType;
@@ -280,6 +281,14 @@ public class ScriptBuilder {
 		}
 		return null;
 	}
+	
+	/**
+	 * @param entity
+	 * @return
+	 */
+	public static String getPluralEntityName(Entity entity) {;
+		return getSingularEntityName(entity)+"s";
+	}
 
 	/**
 	 * Clase interna para manipular la relacion de columna en xml-campo en clase
@@ -382,7 +391,7 @@ public class ScriptBuilder {
 	 * @param entity la entidad
 	 * @return el nombre de la entidad en singular (si es Entidades regresa entidad)
 	 */
-	private static String getSingularEntityName(Entity entity) {
+	public static String getSingularEntityName(Entity entity) {
 		String entityName = entity.getName().toLowerCase();
 		if (entityName.charAt(entityName.length() - 1) == 's')
 			entityName = entityName.substring(0, entityName.length() - 1);
@@ -421,7 +430,7 @@ public class ScriptBuilder {
 	 * @param str el String a convertir
 	 * @return el string con la primera letra may�scula
 	 */
-	private static String capitalizeFirstLetter(String str) {
+	public static String capitalizeFirstLetter(String str) {
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
 
@@ -617,12 +626,19 @@ public class ScriptBuilder {
 				case FOR_GET_MAPPING:
 					result += "/{" + column.getName() + "}";
 					break;
+				case TS_PARAMETER:
+					result += column.getName()+":"+FrontendGenerator.getTypeScriptField(getFieldByColummn(column, entity, true))+",";
+					break;
+				case TS_URL:
+					result += "'/'+"+column.getName()+"+";
 				}
 			}
 			int cut = 0;
 			;
 			switch (type) {
 			case PARAMETER:
+			case TS_PARAMETER:
+			case TS_URL:
 			case PARAMETER_WITH_PATH_VARIABLE:
 			case ONLY_NAMES:
 				cut = 1;
@@ -633,6 +649,7 @@ public class ScriptBuilder {
 			case WHERE_SCRIPT_WITH_QUESTION_MARK:
 				cut = 5;
 				break;
+				
 			}
 			result = result.substring(0, result.length() - cut);
 		} catch (Exception e) {
@@ -651,7 +668,7 @@ public class ScriptBuilder {
 	 */
 	public enum PrimaryKeyScriptType {
 		PARAMETER, WHERE_SCRIPT, WHERE_SCRIPT_WITH_QUESTION_MARK, ONLY_NAMES, PARAMETER_WITH_PATH_VARIABLE,
-		FOR_GET_MAPPING
+		FOR_GET_MAPPING, TS_PARAMETER, TS_URL
 	}
 
 }

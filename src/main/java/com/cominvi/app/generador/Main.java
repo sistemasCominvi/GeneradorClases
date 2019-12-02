@@ -86,6 +86,8 @@ public class Main {
 					}
 					
 					FrontendGenerator.createModel(entity);
+					FrontendGenerator.createServices(entity);
+
 				}
 				System.out.println("Se genero la estructura dao,service,controller para " + counter + " de "
 						+ entities.size() + " entidades\nFallaron " + (entities.size() - counter));
