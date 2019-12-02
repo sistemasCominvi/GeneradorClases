@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.cominvi.app.generador.files.XMLExtractor;
 import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
+import com.cominvi.app.generador.frontend.FrontendGenerator;
 import com.cominvi.app.generador.xml.Column;
 import com.cominvi.app.generador.xml.Entity;
 import com.cominvi.app.generador.xml.Column.ColumnType;
@@ -118,12 +119,13 @@ public class ScriptBuilder {
 			if (fields[i].getName().equals(FECHA_HORA_MOD_FIELD) || fields[i].getName().equals(FECHA_HORA_ALTA_FIELD))
 				continue;
 			if (foreign != null) {
-				preparedStatement += "ps.set" + /*getDebuggedField(getIdForeign(fields[i]).getField(), false)*/"Object" + "("
-						+ (counter) + ", " +buildGet(entity, fields[i])+"!= null ?"+ buildGet(entity, fields[i]) + getForeignKeyPrimaryKeyGet(fields[i])
-						+ " : null);\n";
+				preparedStatement += "ps.set"
+						+ /* getDebuggedField(getIdForeign(fields[i]).getField(), false) */"Object" + "(" + (counter)
+						+ ", " + buildGet(entity, fields[i]) + "!= null ?" + buildGet(entity, fields[i])
+						+ getForeignKeyPrimaryKeyGet(fields[i]) + " : null);\n";
 			} else {
-				preparedStatement += "ps.set" + /*getDebuggedField(fields[i], false)*/"Object" + "(" + (counter) + ", "
-						+ buildGet(entity, fields[i]) + ");\n";
+				preparedStatement += "ps.set" + /* getDebuggedField(fields[i], false) */"Object" + "(" + (counter)
+						+ ", " + buildGet(entity, fields[i]) + ");\n";
 			}
 			counter++;
 		}
@@ -279,6 +281,14 @@ public class ScriptBuilder {
 		}
 		return null;
 	}
+	
+	/**
+	 * @param entity
+	 * @return
+	 */
+	public static String getPluralEntityName(Entity entity) {;
+		return getSingularEntityName(entity)+"s";
+	}
 
 	/**
 	 * Clase interna para manipular la relacion de columna en xml-campo en clase
@@ -369,7 +379,7 @@ public class ScriptBuilder {
 				|| field.getType().toString().contains("boolean") ? ".is" : ".get";
 		String baseGet = getSingularEntityName(entity) + getType + capitalizeFirstLetter(field.getName()) + "()";
 		if (getDebuggedField(field, false).equals("Date"))
-			return baseGet+" != null ? new java.sql.Timestamp(" + baseGet + ".getTime()) : null";
+			return baseGet + " != null ? new java.sql.Timestamp(" + baseGet + ".getTime()) : null";
 		else
 			return baseGet;
 	}
@@ -381,7 +391,7 @@ public class ScriptBuilder {
 	 * @param entity la entidad
 	 * @return el nombre de la entidad en singular (si es Entidades regresa entidad)
 	 */
-	private static String getSingularEntityName(Entity entity) {
+	public static String getSingularEntityName(Entity entity) {
 		String entityName = entity.getName().toLowerCase();
 		if (entityName.charAt(entityName.length() - 1) == 's')
 			entityName = entityName.substring(0, entityName.length() - 1);
@@ -420,7 +430,7 @@ public class ScriptBuilder {
 	 * @param str el String a convertir
 	 * @return el string con la primera letra may�scula
 	 */
-	private static String capitalizeFirstLetter(String str) {
+	public static String capitalizeFirstLetter(String str) {
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
 
@@ -446,8 +456,7 @@ public class ScriptBuilder {
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
 						+ "(new " + ProjectFolderConfiguration.getModelPackage() + "."
 						+ capitalizeFirstLetter(getDebuggedField(fields[i], false)) + "(rs.get"
-						+ getDebuggedField(foreign.getField(), false) + "(\"" + actualColumn.getName()
-						+ "\"))); \n";
+						+ getDebuggedField(foreign.getField(), false) + "(\"" + actualColumn.getName() + "\"))); \n";
 			} else {
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
 						+ "(rs.get" + isDate(getDebuggedField(fields[i], false)) + "(\"" + fields[i].getName()
@@ -460,13 +469,13 @@ public class ScriptBuilder {
 	/**
 	 * Obtiene la columna correspondiente al campo
 	 * 
-	 * @param field el campo a obtener
+	 * @param field  el campo a obtener
 	 * @param entity la entidad para buscar en ella
 	 * @return la columna correspondiente a ese campo
 	 */
 	private static Column getColumnByField(Field field, Entity entity) {
-		for(Column column : entity.getColumns())
-			if(column.getFieldName().equals(field.getName()))
+		for (Column column : entity.getColumns())
+			if (column.getFieldName().equals(field.getName()))
 				return column;
 		return null;
 	}
@@ -536,9 +545,12 @@ public class ScriptBuilder {
 	 */
 	public static Field getFieldByColummn(Column column, Entity entity, boolean withIds) {
 		Field[] fields = getEntityFields(entity, withIds);
-		for (int i = 0; i < fields.length; i++)
+		for (int i = 0; i < fields.length; i++) {
 			if (fields[i].getName().equals(column.getName()))
 				return fields[i];
+			else if (fields[i].getName().equals(column.getFieldName()))
+				return fields[i];
+		}
 		return null;
 	}
 
@@ -614,12 +626,19 @@ public class ScriptBuilder {
 				case FOR_GET_MAPPING:
 					result += "/{" + column.getName() + "}";
 					break;
+				case TS_PARAMETER:
+					result += column.getName()+":"+FrontendGenerator.getTypeScriptField(getFieldByColummn(column, entity, true))+",";
+					break;
+				case TS_URL:
+					result += "'/'+"+column.getName()+"+";
 				}
 			}
 			int cut = 0;
 			;
 			switch (type) {
 			case PARAMETER:
+			case TS_PARAMETER:
+			case TS_URL:
 			case PARAMETER_WITH_PATH_VARIABLE:
 			case ONLY_NAMES:
 				cut = 1;
@@ -630,6 +649,7 @@ public class ScriptBuilder {
 			case WHERE_SCRIPT_WITH_QUESTION_MARK:
 				cut = 5;
 				break;
+				
 			}
 			result = result.substring(0, result.length() - cut);
 		} catch (Exception e) {
@@ -648,7 +668,7 @@ public class ScriptBuilder {
 	 */
 	public enum PrimaryKeyScriptType {
 		PARAMETER, WHERE_SCRIPT, WHERE_SCRIPT_WITH_QUESTION_MARK, ONLY_NAMES, PARAMETER_WITH_PATH_VARIABLE,
-		FOR_GET_MAPPING
+		FOR_GET_MAPPING, TS_PARAMETER, TS_URL
 	}
 
 }

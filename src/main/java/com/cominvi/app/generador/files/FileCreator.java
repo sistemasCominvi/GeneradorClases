@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,6 +32,7 @@ import com.cominvi.app.commons.util.JsonDate;
 import com.cominvi.app.commons.util.UtilDate;
 import com.cominvi.app.generador.config.Configuracion;
 import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
+import com.cominvi.app.generador.frontend.FrontendGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -282,7 +284,7 @@ public class FileCreator {
 	/**
 	 * @param path el path a eliminar
 	 */
-	public void deleteDirectoryRecursion(Path path) {
+	private static void deleteDirectoryRecursion(Path path) {
 		try {
 			if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
 				try (DirectoryStream<Path> entries = Files.newDirectoryStream(path)) {
@@ -325,7 +327,7 @@ public class FileCreator {
 	 * @param pathFile la ruta
 	 * @throws IOException
 	 */
-	private void writeFile(String aString, String pathFile) throws IOException {
+	public static void writeFile(String aString, String pathFile) throws IOException {
 		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pathFile), "UTF-8"));
 		try {
 			out.write(aString);
@@ -364,6 +366,41 @@ public class FileCreator {
 			// e.printStackTrace();
 		}
 		return entities;
+	}
+
+	/**
+	 * Borra los archivos
+	 */
+	public static void deleteAll() {
+		try {			
+			FileUtils.deleteDirectory(new File(ProjectFolderConfiguration.getBaseURI().replaceAll("\\\\/", "/")));
+			FileUtils.deleteDirectory(new File(ProjectFolderConfiguration.getModelPath().replaceAll("\\\\/", "/")));
+			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_MODELS_PATH.replaceAll("\\\\/", "/")));
+			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_SERVICES_PATH.replaceAll("\\\\/", "/")));
+			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_PATH.replaceAll("\\\\/", "/")));
+			new File(ProjectFolderConfiguration.getORMXMLAbsolutePath().replaceAll("\\\\/", "/")).delete();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	/**
+	 * @param directoryToBeDeleted
+	 * @return
+	 */
+	private static boolean deleteDirectory(File directoryToBeDeleted) {
+		System.out.println("Limpiando archivos de la ruta:" + directoryToBeDeleted.getAbsolutePath() + "...");
+		File[] allContents = directoryToBeDeleted.listFiles();
+		if (allContents != null)
+			for (File file : allContents)
+				System.out.println(
+						"Borrando " + file.getAbsolutePath() + ": " + (deleteDirectory(file) ? " exitoso" : " fallo"));
+		else
+			System.out.println("No se encontraron archivos.");
+
+		return directoryToBeDeleted.delete();
 	}
 
 }
