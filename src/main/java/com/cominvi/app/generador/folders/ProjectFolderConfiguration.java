@@ -1,7 +1,7 @@
 package com.cominvi.app.generador.folders;
 
-import com.cominvi.app.generador.files.XMLExtractor;
 import com.cominvi.app.generador.pom.POMExplorer;
+import com.cominvi.app.generador.xml.XMLExtractor;
 
 /**
  * @author angelo.loza Clase para obtener carpetas del proyecto

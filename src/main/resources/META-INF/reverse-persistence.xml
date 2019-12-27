@@ -18,7 +18,7 @@
 			<property name="openjpa.ConnectionPassword"
 				value="Cominvi123" />
 			<property name="openjpa.ConnectionURL"
-				value="jdbc:jtds:sqlserver://localhost/sisec" />
+				value="jdbc:jtds:sqlserver://localhost/compras" />
 			<property name="javax.persistence.jdbc.driver"
 				value="net.sourceforge.jtds.jdbc.Driver" />
 

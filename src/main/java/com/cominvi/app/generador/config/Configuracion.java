@@ -5,7 +5,7 @@ package com.cominvi.app.generador.config;
  * 
  *         Clase de configuracion para las entidades, para cada entidad se tiene
  *         una configuracion distinta
- *
+ * Cambio dummy
  */
 public class Configuracion {
 

@@ -378,6 +378,7 @@ public class FileCreator {
 			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_MODELS_PATH.replaceAll("\\\\/", "/")));
 			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_SERVICES_PATH.replaceAll("\\\\/", "/")));
 			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_PATH.replaceAll("\\\\/", "/")));
+			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_COMPONENT_PATH.replaceAll("\\\\/", "/")));
 			new File(ProjectFolderConfiguration.getORMXMLAbsolutePath().replaceAll("\\\\/", "/")).delete();
 
 		} catch (IOException e) {
