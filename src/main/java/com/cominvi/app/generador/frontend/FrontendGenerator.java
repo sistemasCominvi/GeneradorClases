@@ -3,7 +3,10 @@ package com.cominvi.app.generador.frontend;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 import com.cominvi.app.generador.files.FileCreator;
 import com.cominvi.app.generador.files.scriptbuilder.ScriptBuilder;
@@ -27,7 +30,7 @@ public class FrontendGenerator {
 	public static final String TS_MODELS_PATH = TS_PATH + "/models";
 	public static final String TS_SERVICES_PATH = TS_PATH + "/services";
 	public static final String TS_COMPONENT_PATH = TS_PATH + "/catalogos";
-	public static int MAXIMUM_FORM_TYPE_THRESHOLD = 5;
+	public static int MAXIMUM_FORM_TYPE_THRESHOLD = 1;
 
 
 	/**
@@ -103,37 +106,42 @@ public class FrontendGenerator {
 		mkdir(componentPath);
 		mkdir(componentPath+"/listado");
 		
-		String buildForms = buildComponentListHTML(entity);
+		Map<String, String> replaceData = new HashMap<>();
+		replaceData.put("@entityNameLowerCase", entity.getName().toLowerCase());
+		replaceData.put("@nameEntity",entity.getName());
+		replaceData.put("@tsCols", getTSCols(entity));
+		replaceData.put("@entitynameLowerCaseSingular", ScriptBuilder.getSingularEntityName(entity));
+		
+		String buildForms = buildComponentListHTML(entity, replaceData);
 		createFile(componentPath+"/listado", entity, buildForms, "listado-"+entity.getName().toLowerCase() + ".component.html");
-		buildForms = buildComponentListTS(entity);
+		buildForms = buildComponentListTS(entity, replaceData);
 		createFile(componentPath+"/listado", entity, buildForms, "listado-"+entity.getName().toLowerCase() + ".component.ts");
 	}
 
-	private static String buildComponentListTS(Entity entity) {
-		return "import { Component, OnInit } from '@angular/core';\r\n" + 
-				"import { "+entity.getName()+"Service } from 'src/app/services/service/catalogo/"+entity.getName().toLowerCase()+".service';\r\n" + 
-				"import { "+entity.getName()+" } from 'src/app/models/catalogos/"+entity.getName().toLowerCase()+"';\r\n" + 
-				"\r\n" + 
-				"@Component({\r\n" + 
-				"\tselector: 'app-listado-"+entity.getName().toLowerCase()+"',\r\n" + 
-				"\ttemplateUrl: './listado-"+entity.getName().toLowerCase()+".component.html',\r\n" + 
-				"\tstyles: []\r\n" + 
-				"})\r\n" + 
-				"export class Listado"+entity.getName()+"Component implements OnInit {\r\n" + 
-				"\tpublic "+entity.getName().toLowerCase()+" : "+entity.getName()+"[];\r\n" + 
-				"\tpublic cols:any[];"+
-				"\r\n" + 
-				"\tconstructor(private "+entity.getName().toLowerCase()+"Service : "+entity.getName()+"Service) { }\r\n" + 
-				"\r\n" + 
-				"\tngOnInit() {\r\n" + 
-				"\t\tthis."+entity.getName().toLowerCase()+"Service.findAll().subscribe(data => {\r\n" + 
-				"\t\t\tthis."+entity.getName().toLowerCase()+" = data;\r\n" + 
-				"\t\t});\r\n" + 
-				"\t\tthis.cols = ["+getTSCols(entity)+"];"+
-				"\t}\r\n" + 
-				"\r\n" + 
-				"}\r\n" + 
-				"";
+	private static String buildComponentListTS(Entity entity, Map map) {
+	
+		return new FileCreator().replaceFile("listado-template-ts.txt", map);
+		/*
+		 * return "import { Component, OnInit } from '@angular/core';\r\n" +
+		 * "import { "+entity.getName()
+		 * +"Service } from 'src/app/services/service/catalogo/"+entity.getName().
+		 * toLowerCase()+".service';\r\n" +
+		 * "import { "+entity.getName()+" } from 'src/app/models/catalogos/"+entity.
+		 * getName().toLowerCase()+"';\r\n" + "\r\n" + "@Component({\r\n" +
+		 * "\tselector: 'app-listado-"+entity.getName().toLowerCase()+"',\r\n" +
+		 * "\ttemplateUrl: './listado-"+entity.getName().toLowerCase()+
+		 * ".component.html',\r\n" + "\tstyles: []\r\n" + "})\r\n" +
+		 * "export class Listado"+entity.getName()+"Component implements OnInit {\r\n" +
+		 * "\tpublic "+entity.getName().toLowerCase()+" : "+entity.getName()+"[];\r\n" +
+		 * "\tpublic cols:any[];"+ "\r\n" +
+		 * "\tconstructor(private "+entity.getName().toLowerCase()+"Service : "+entity.
+		 * getName()+"Service) { }\r\n" + "\r\n" + "\tngOnInit() {\r\n" +
+		 * "\t\tthis."+entity.getName().toLowerCase()
+		 * +"Service.findAll().subscribe(data => {\r\n" +
+		 * "\t\t\tthis."+entity.getName().toLowerCase()+" = data;\r\n" + "\t\t});\r\n" +
+		 * "\t\tthis.cols = ["+getTSCols(entity)+"];"+ "\t}\r\n" + "\r\n" + "}\r\n" +
+		 * "";
+		 */
 	}
 
 	/**
@@ -152,36 +160,37 @@ public class FrontendGenerator {
 	 * @param entity
 	 * @return
 	 */
-	private static String buildComponentListHTML(Entity entity) {
-		return "<mat-card class=\""+entity.getName().toLowerCase()+"-list-card\">\r\n" + 
-				"\t\t<mat-card-header>\r\n" + 
-				"\t\t\t\t<mat-card-title>"+entity.getName()+"</mat-card-title>\r\n" + 
-				"\t\t\t\t<mat-card-subtitle>"+entity.getName().toLowerCase()+"</mat-card-subtitle>\r\n" + 
-				"\t\t</mat-card-header>\r\n" + 
-				"\r\n" + 
-				"\t\t<mat-card-content>\r\n" + 
-				"\t\t\t\t<p-table [value]=\""+entity.getName().toLowerCase()+"\">\r\n" + 
-				"\t\t\t\t\t\t<ng-template pTemplate=\"header\">\r\n" + 
-				"\t\t\t\t\t\t\t\t<tr>\r\n" + 
-				"\t\t\t\t\t\t\t\t\t<th *ngFor=\"let col of cols\">\r\n" + 
-				"\t\t\t\t\t\t\t\t\t\t{{col.header}}\r\n" + 
-				"\t\t\t\t\t\t\t\t\t</th>"+
-				//getTableHeaders(entity)+
-				"\t\t\t\t\t\t\t\t</tr>\r\n" + 
-				"\t\t\t\t\t\t</ng-template>\r\n" + 
-				"\t\t\t\t\t\t<ng-template pTemplate=\"body\" let-"+ScriptBuilder.getSingularEntityName(entity)+">\r\n" + 
-				"\t\t\t\t\t\t\t\t<tr>\r\n" + 
-				"\t\t\t\t\t\t\t\t\t<td *ngFor=\"let col of cols\">\r\n" + 
-				"\t\t\t\t\t\t\t\t\t\t{{"+ScriptBuilder.getSingularEntityName(entity)+"[col.field]}}\r\n" + 
-				"\t\t\t\t\t\t\t\t\t</td>"+
-				//getTableColumns(entity)+
-				"\t\t\t\t\t\t</ng-template>\r\n" + 
-				"\t\t\t\t</p-table>\r\n" + 
-				"\t\t</mat-card-content>\r\n" + 
-				"\t\t<mat-card-actions>\r\n" + 
-				"\t\t\t\t<button mat-button>REGRESAR</button>\r\n" + 
-				"\t\t</mat-card-actions>\r\n" + 
-				"</mat-card>";
+	private static String buildComponentListHTML(Entity entity, Map map) {
+		return new FileCreator().replaceFile("listado-template-html.txt", map);
+//		return "<mat-card class=\""+entity.getName().toLowerCase()+"-list-card\">\r\n" + 
+//				"\t\t<mat-card-header>\r\n" + 
+//				"\t\t\t\t<mat-card-title>"+entity.getName()+"</mat-card-title>\r\n" + 
+//				"\t\t\t\t<mat-card-subtitle>"+entity.getName().toLowerCase()+"</mat-card-subtitle>\r\n" + 
+//				"\t\t</mat-card-header>\r\n" + 
+//				"\r\n" + 
+//				"\t\t<mat-card-content>\r\n" + 
+//				"\t\t\t\t<p-table [value]=\""+entity.getName().toLowerCase()+"\">\r\n" + 
+//				"\t\t\t\t\t\t<ng-template pTemplate=\"header\">\r\n" + 
+//				"\t\t\t\t\t\t\t\t<tr>\r\n" + 
+//				"\t\t\t\t\t\t\t\t\t<th *ngFor=\"let col of cols\">\r\n" + 
+//				"\t\t\t\t\t\t\t\t\t\t{{col.header}}\r\n" + 
+//				"\t\t\t\t\t\t\t\t\t</th>"+
+//				//getTableHeaders(entity)+
+//				"\t\t\t\t\t\t\t\t</tr>\r\n" + 
+//				"\t\t\t\t\t\t</ng-template>\r\n" + 
+//				"\t\t\t\t\t\t<ng-template pTemplate=\"body\" let-"+ScriptBuilder.getSingularEntityName(entity)+">\r\n" + 
+//				"\t\t\t\t\t\t\t\t<tr>\r\n" + 
+//				"\t\t\t\t\t\t\t\t\t<td *ngFor=\"let col of cols\">\r\n" + 
+//				"\t\t\t\t\t\t\t\t\t\t{{"+ScriptBuilder.getSingularEntityName(entity)+"[col.field]}}\r\n" + 
+//				"\t\t\t\t\t\t\t\t\t</td>"+
+//				//getTableColumns(entity)+
+//				"\t\t\t\t\t\t</ng-template>\r\n" + 
+//				"\t\t\t\t</p-table>\r\n" + 
+//				"\t\t</mat-card-content>\r\n" + 
+//				"\t\t<mat-card-actions>\r\n" + 
+//				"\t\t\t\t<button mat-button>REGRESAR</button>\r\n" + 
+//				"\t\t</mat-card-actions>\r\n" + 
+//				"</mat-card>";
 	}
 	
 
@@ -259,23 +268,32 @@ public class FrontendGenerator {
 
 	
 	private static String buildComponentFormTS(Entity entity, FormType formType) {
-		return "import { Component, OnInit } from '@angular/core';\r\n" + 
-				"\r\n" + 
-				"\r\n" + 
-				"@Component({\r\n" + 
-				"\tselector: 'app-formulario-"+entity.getName().toLowerCase()+"',\r\n" + 
-				"\ttemplateUrl: './formulario-"+entity.getName().toLowerCase()+".component.html',\r\n" + 
-				"\tstyles: []\r\n" + 
-				"})\r\n" + 
-				"export class Formulario"+entity.getName()+"Component implements OnInit {\r\n" + 
-				"\r\n" + 
-				"\r\n" + 
-				"\tconstructor() { }\r\n" + 
-				"\r\n" + 
-				"\tngOnInit() {\r\n" + 
-				"\t}\r\n" + 
-				"\r\n" + 
-				"}\r\n" ;
+		
+		Map<String, String> replaceData = new HashMap<>();
+		replaceData.put("@entityNameLowerCase", entity.getName().toLowerCase());
+		replaceData.put("@nameEntity",entity.getName());
+		replaceData.put("@tsCols", getTSCols(entity));
+		replaceData.put("@entitynameLowerCaseSingular", ScriptBuilder.getSingularEntityName(entity));
+		
+		return new FileCreator().replaceFile("formulario-template-ts.txt", replaceData);
+
+//		return "import { Component, OnInit } from '@angular/core';\r\n" + 
+//				"\r\n" + 
+//				"\r\n" + 
+//				"@Component({\r\n" + 
+//				"\tselector: 'app-formulario-"+entity.getName().toLowerCase()+"',\r\n" + 
+//				"\ttemplateUrl: './formulario-"+entity.getName().toLowerCase()+".component.html',\r\n" + 
+//				"\tstyles: []\r\n" + 
+//				"})\r\n" + 
+//				"export class Formulario"+entity.getName()+"Component implements OnInit {\r\n" + 
+//				"\r\n" + 
+//				"\r\n" + 
+//				"\tconstructor() { }\r\n" + 
+//				"\r\n" + 
+//				"\tngOnInit() {\r\n" + 
+//				"\t}\r\n" + 
+//				"\r\n" + 
+//				"}\r\n" ;
 	}
 
 	/**

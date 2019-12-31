@@ -28,7 +28,7 @@ public class FormBuilder {
 						+ column.getName() + "\"" + required + ">\r\n";
 				break;
 			case NG_MODEL:
-				input = "\t\t\t\t<input matInput" + getInputType(column, entity) + " [(ngModel)]=\""
+				input = "\t\t\t\t<input matInput " + getInputType(column, entity) + " [(ngModel)]=\""
 						+ ScriptBuilder.getSingularEntityName(entity) + "." + column.getName() + "\"" + required
 						+ ">\r\n";
 				break;
