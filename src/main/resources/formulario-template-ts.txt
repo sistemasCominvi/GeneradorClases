@@ -1,0 +1,73 @@
+import { Component, OnInit } from '@angular/core';
+import { @nameEntity } from 'src/app/models/catalogos/@entityNameLowerCase';
+import { ActivatedRoute } from '@angular/router';
+import { @nameEntityService } from 'src/app/services/service/catalogo/@entityNameLowerCase.service';
+import { Location } from '@angular/common';
+import { plainToClass   } from "class-transformer";
+
+
+
+
+@Component({
+  selector: 'app-formulario-@entityNameLowerCase',
+  templateUrl: './formulario-@entityNameLowerCase.component.html',
+  styles: []
+})
+export class Formulario@nameEntityComponent implements OnInit {
+
+  public @entitynameLowerCaseSingular: @nameEntity = new @nameEntity();
+  public editar: boolean;
+  private deviceInfo: any;
+
+  aceptar() {
+    if (this.editar) {
+      this.@entityNameLowerCaseService.update(this.@entitynameLowerCaseSingular).subscribe(data => {
+        this.location.back();
+      });
+    }
+    else {
+      /*
+      * Agregar el usuario desde sesión 
+      */
+     var idempleado = Math.floor(Math.random()*11400+1);
+
+      this.@entitynameLowerCaseSingular.idempleadomod=idempleado;
+      this.@entitynameLowerCaseSingular.idempleadoalta=idempleado;
+      this.@entitynameLowerCaseSingular.ipalta='0.0.0.0';
+      this.@entitynameLowerCaseSingular.ipmod='0.0.0.0';
+      this.@entitynameLowerCaseSingular.tipodispositivoalta='';
+      this.@entitynameLowerCaseSingular.tipodispositivomod='';
+      this.@entitynameLowerCaseSingular.latitudalta=0;
+      this.@entitynameLowerCaseSingular.latitudmod=0;
+      this.@entitynameLowerCaseSingular.longitudalta=0;
+      this.@entitynameLowerCaseSingular.longitudmod=0;
+    
+      this.@entityNameLowerCaseService.save(this.@entitynameLowerCaseSingular).subscribe(data => {
+        this.location.back();
+      });
+    }
+  }
+
+  cancelar() {
+    this.location.back();
+  }
+
+  constructor(
+    private route: ActivatedRoute,
+    private @entityNameLowerCaseService: @nameEntityService,
+    private location: Location,
+  ) {
+
+  }
+
+  ngOnInit() {
+    var params = this.route.snapshot.params;
+    if(Object.keys(params).length){
+      this.@entitynameLowerCaseSingular = plainToClass(@nameEntity, params);
+      this.editar = true;
+    } else {
+      this.editar = false;
+    }
+  }
+
+}

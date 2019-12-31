@@ -1,0 +1,128 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { MatDialog } from '@angular/material';
+import { @nameEntityService } from 'src/app/services/service/catalogo/@entityNameLowerCase.service';
+import { @nameEntity } from 'src/app/models/catalogos/@entityNameLowerCase';
+
+@Component({
+  selector: 'app-listado-@entityNameLowerCase',
+  templateUrl: './listado-@entityNameLowerCase.component.html',
+  styles: []
+})
+export class Listado@nameEntityComponent implements OnInit {
+
+  public columnas: any[] = [];
+  public exportColumnas: any;
+  public @entityNameLowerCase: @nameEntity[] = [];
+  public selected@entitynameLowerCaseSingular: @nameEntity;
+  public selectedColumns: any[];
+  public blocked: boolean = true;
+  public verFiltro: boolean = false;
+  public verFiltroCabecera: boolean = false;
+
+  public fabButtons = [
+    { icon: 'far fa-file-excel', color: '#00897b', tooltip: 'Exportar Excel', tarea: 'excel' },
+    { icon: 'far fa-file-pdf', color: '#ff0000', tooltip: 'Exportar PDF', tarea: 'pdf' },
+    { icon: 'fas fa-search', color: '#e9ab2e', tooltip: 'Buscar', tarea: 'buscar' },
+    { icon: 'far fa-eye', color: '#028ee1', tooltip: 'Ocultar/Mostrar Filtros', tarea: 'showHide' },
+    { icon: 'far fa-plus-square', color: '#028ee1', tooltip: 'Nuevo registro', tarea: 'nuevo' },
+    { icon: 'far fa-edit', color: '#6352ce', tooltip: 'Editar registro', tarea: 'editar' },
+    { icon: 'far fa-trash-alt', color:"#cc1132", tooltip:'Eliminar registro', tarea: 'baja'}
+  ];
+
+  public buttons = [];
+  public fabTogglerState = 'inactive';
+
+
+  constructor(
+    private @entityNameLowerCaseService: @nameEntityService,
+    private router: Router,
+    private messageService: MessageService,
+    public dialog: MatDialog,
+    private confirmationService : ConfirmationService
+  ) {
+    this.columnas = [
+		@tsCols
+    ];
+
+    this.selectedColumns = this.columnas;
+    this.exportColumnas = this.selectedColumns.map(col => ({ title: col.header, dataKey: col.field }));
+
+  }
+
+  ngOnInit() {
+    this.listado();
+  }
+
+  listado() {
+    this.@entityNameLowerCaseService.findAll().subscribe(data => {
+      this.@entityNameLowerCase = data;
+    });
+  }
+
+  showItems() {
+    this.fabTogglerState = 'active';
+    this.buttons = this.fabButtons;
+  }
+
+  hideItems() {
+    this.fabTogglerState = 'inactive';
+    this.buttons = [];
+  }
+
+  onToggleFab() {
+    this.buttons.length ? this.hideItems() : this.showItems();
+  }
+
+  realizarTarea(tarea: string, event: any) {
+
+    switch (tarea) {
+      case 'nuevo':
+        this.router.navigate(['/formulario@entityNameLowerCase']);
+        break;
+      case 'editar':
+        this.router.navigate(['/formulario@entityNameLowerCase', this.selected@entitynameLowerCaseSingular]);
+        break;
+      case 'baja':
+        this.confirmationService.confirm({
+          message: '¿Estás seguro(a) de eliminar el registro?',
+          acceptLabel: 'Aceptar',
+          rejectLabel: 'Cancelar',
+          accept: () => {
+              this.@entityNameLowerCaseService.delete(this.selected@entitynameLowerCaseSingular.id@entitynameLowerCaseSingular).subscribe(data=>{
+                this.@entityNameLowerCase.splice(this.@entityNameLowerCase.indexOf(this.selected@entitynameLowerCaseSingular),1);
+                this.messageService.add({severity:'info', summary:'Registro eliminado', detail:'El registro se ha eliminado exitosamente.', sticky: false});
+
+              });
+          }
+      });
+       
+        break;
+      case 'excel':
+        event.exportCSV();
+        break;
+      case 'pdf':
+        import('jspdf').then(jsPDF => {
+          import("jspdf-autotable").then(x => {
+            const doc = new jsPDF.default(0, 0);
+            doc.autoTable(this.exportColumnas, this.@entityNameLowerCase);
+            doc.save('@entityNameLowerCase.pdf');
+          })
+        })
+        break;
+      case 'grafica':
+        this.router.navigate(['/grafica']);
+        break;
+      case 'buscar':
+        //this.abrirFiltros();
+        break
+      case 'showHide':
+        this.verFiltroCabecera = (this.verFiltroCabecera) ? false : true;
+        break;
+    }
+
+  }
+
+
+}

@@ -1,0 +1,94 @@
+<!-- Agregar si se quiere ocultar el menu flotante al hacer click en cualquier lugar -->
+<div id="fab-dismiss" *ngIf="fabTogglerState==='active'" (click)="onToggleFab()"></div>
+<p-confirmDialog header="Confirmar" appendTo="body" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+
+<div class="animated fadeIn">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>@nameEntity</mat-card-title>
+            <mat-card-subtitle>Listado @nameEntity</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+
+
+            <div *ngIf="verFiltro" style="max-width: 250px;">
+                <ul>
+
+                </ul>
+            </div>
+
+
+            <!-- Definicion de la tabla -->
+            <p-table #dt [columns]="selectedColumns" [value]="@entityNameLowerCase" selectionMode="single" [(selection)]="selected@entitynameLowerCaseSingular" [responsive]="true" [resizableColumns]="true" [reorderableColumns]="true" stateStorage="local" stateKey="state-demo">
+
+
+                <!-- Filtro global y Ocultar/Mostrar columnas-->
+                <ng-template pTemplate="caption">
+
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+
+                        <p-multiSelect [options]="columnas" [(ngModel)]="selectedColumns" optionLabel="header" selectedItemsLabel=">" [style]="{maxWidth: '200px'}" defaultLabel="Seleccionar columnas">
+                        </p-multiSelect>
+
+                        <mat-form-field style="width: 25%;">
+                            <input type="text" matInput pInputText placeholder="Filtro Global" (input)="dt.filterGlobal($event.target.value, 'contains')">
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+
+                <!-- Cabecera -->
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn>
+                            {{col.header}}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                        </th>
+                    </tr>
+                    <!-- Filtros -->
+                    <tr *ngIf="verFiltroCabecera">
+                        <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                        </th>
+                    </tr>
+
+                </ng-template>
+
+                <!-- Cuerpo-->
+                <ng-template pTemplate="body" let-rowData let-columns="columns">
+                    <tr [pSelectableRow]="rowData">
+                        <td *ngFor="let col of columns">
+                            <span class="ui-column-title">{{col.header}}</span>
+                            <div *ngIf="!col.decimal && !col.fecha">{{rowData[col.field]}}</div>
+
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <!-- Pie de pagina-->
+                <ng-template pTemplate="footer">
+                    <tr>
+                        <td colspan="6"></td>
+                        <td></td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+            <!-- Fin de tabla-->
+        </mat-card-content>
+    </mat-card>
+
+</div>
+
+
+
+<div class="fab-container">
+    <button color="primary" mat-fab class="fab-toggler" (click)="onToggleFab()">
+        <i class="material-icons">add</i>
+    </button>
+    <div>
+        <button *ngFor="let btn of buttons" mat-mini-fab color="secondary" [matTooltip]="btn.tooltip" matTooltipPosition="left" (click)="realizarTarea(btn.tarea, dt)">
+             <i [class]="btn.icon + ' fa-lg'" [ngStyle]="{'color': btn.color}"></i>
+        </button>
+    </div>
+</div>
+
+<p-toast position="top-right"></p-toast>
