@@ -21,6 +21,15 @@ export class Formulario@nameEntityComponent implements OnInit {
 
   aceptar() {
     if (this.editar) {
+      /*
+       Agregar datos desde sesión
+      */
+      var idempleado = Math.floor(Math.random() * 11400 + 1);
+      this.@entitynameLowerCaseSingular.idempleadomod = idempleado;
+      this.@entitynameLowerCaseSingular.ipmod = '0.0.0.0';
+      this.@entitynameLowerCaseSingular.tipodispositivomod = '';
+      this.@entitynameLowerCaseSingular.latitudmod = 0;
+      this.@entitynameLowerCaseSingular.longitudmod = 0;
       this.@entityNameLowerCaseService.update(this.@entitynameLowerCaseSingular).subscribe(data => {
         this.location.back();
       });
