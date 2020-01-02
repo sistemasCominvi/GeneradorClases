@@ -133,7 +133,7 @@ public class FrontendGenerator {
 	private static String getPipeFields(Column column, Entity entity) {
 		Field field = ScriptBuilder.getFieldByColumn(column, entity, true);
 		if (field == null)
-			return "any";
+			return "";
 		String fieldType = ScriptBuilder.getDebuggedField(field, false).toLowerCase();
 
 		if (isTypeNumber(fieldType))
