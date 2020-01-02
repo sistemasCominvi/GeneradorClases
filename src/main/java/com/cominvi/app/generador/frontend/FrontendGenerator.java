@@ -122,6 +122,29 @@ public class FrontendGenerator {
 				"listado-" + entity.getName().toLowerCase() + ".component.ts");
 	}
 
+
+	/**
+	 * 
+	 * Regresa el tipo de columna
+	 * @param column
+	 * @param entity
+	 * @return
+	 */
+	private static String getPipeFields(Column column, Entity entity) {
+		Field field = ScriptBuilder.getFieldByColumn(column, entity, true);
+		if (field == null)
+			return "any";
+		String fieldType = ScriptBuilder.getDebuggedField(field, false).toLowerCase();
+
+		if (isTypeNumber(fieldType))
+			return ", decimal:true";
+		//if (fieldType.equals("string") || fieldType.equals("boolean"))
+			//return fieldType;
+		if (fieldType.equals("date"))
+			return ", fecha:true";
+		return "";
+	}
+
 	/**
 	 * @param entity
 	 * @param map
@@ -142,7 +165,8 @@ public class FrontendGenerator {
 				if (!column.isAuditoriaPrimary())
 					continue;
 			cols += "\n\t\t\t{field: '" + column.getName() + "'" + ", header:'"
-					+ ScriptBuilder.capitalizeFirstLetter(column.getName()) + "'},";
+					+ ScriptBuilder.capitalizeFirstLetter(column.getName()) + "'" + getPipeFields(column, entity)
+					+ "},";
 		}
 		cols = cols.substring(0, cols.length() - 1);
 		return cols;
@@ -206,13 +230,11 @@ public class FrontendGenerator {
 				+ ScriptBuilder.getPrimaryKeys(entity, PrimaryKeyScriptType.TS_URL) + ");\r\n" + "\t}\r\n" + "\r\n"
 				+ "\tpublic get(" + ScriptBuilder.getPrimaryKeys(entity, PrimaryKeyScriptType.TS_PARAMETER) + "){\r\n"
 				+ "\t\treturn this.http.get<" + entity.getName() + ">(this." + ScriptBuilder.getPluralEntityName(entity)
-				+ "Url+" + ScriptBuilder.getPrimaryKeys(entity, PrimaryKeyScriptType.TS_URL) + ");\r\n"
-				+"\t}\n"
-				+"\tpublic update(" + ScriptBuilder.getPluralEntityName(entity) + ": " + entity.getName()+") {\r\n"
-				+"\t\treturn this.http.put<"+entity.getName()+">(this."+ ScriptBuilder.getPluralEntityName(entity) 
-				+ "Url+"+ ScriptBuilder.getPrimaryKeys(entity, PrimaryKeyScriptType.TS_URL_AS_OBJECT) + ","+ScriptBuilder.getPluralEntityName(entity)+");\r\n" 
-				+ "\t}\r\n"
-				+ "\r\n" + "\r\n" + "}";
+				+ "Url+" + ScriptBuilder.getPrimaryKeys(entity, PrimaryKeyScriptType.TS_URL) + ");\r\n" + "\t}\n"
+				+ "\tpublic update(" + ScriptBuilder.getPluralEntityName(entity) + ": " + entity.getName() + ") {\r\n"
+				+ "\t\treturn this.http.put<" + entity.getName() + ">(this." + ScriptBuilder.getPluralEntityName(entity)
+				+ "Url+" + ScriptBuilder.getPrimaryKeys(entity, PrimaryKeyScriptType.TS_URL_AS_OBJECT) + ","
+				+ ScriptBuilder.getPluralEntityName(entity) + ");\r\n" + "\t}\r\n" + "\r\n" + "\r\n" + "}";
 	}
 
 	/**
@@ -225,8 +247,9 @@ public class FrontendGenerator {
 				+ "\t\t<mat-card-subtitle>{{action}} " + ScriptBuilder.getSingularEntityName(entity)
 				+ "</mat-card-subtitle>\r\n" + "\t</mat-card-header>\r\n" + "\r\n" + "\t<mat-card-content>\r\n"
 				+ FormBuilder.getFormsHTML(entity, formType) + "\t</mat-card-content>\r\n" + "\t<mat-card-actions>\r\n"
-				+ "\t\t<button mat-button (click)=\"aceptar()\">Aceptar</button>\r\n" + "\t\t<button mat-button (click)=\"aceptar()\">Cancelar</button>\r\n"
-				+ "\t</mat-card-actions>\r\n" + "</mat-card>";
+				+ "\t\t<button mat-button (click)=\"aceptar()\">Aceptar</button>\r\n"
+				+ "\t\t<button mat-button (click)=\"aceptar()\">Cancelar</button>\r\n" + "\t</mat-card-actions>\r\n"
+				+ "</mat-card>";
 	}
 
 	public enum FormType {
@@ -234,32 +257,12 @@ public class FrontendGenerator {
 	}
 
 	private static String buildComponentFormTS(Entity entity, FormType formType) {
-
 		Map<String, String> replaceData = new HashMap<>();
 		replaceData.put("@entityNameLowerCase", entity.getName().toLowerCase());
 		replaceData.put("@nameEntity", entity.getName());
 		replaceData.put("@tsCols", getTSCols(entity));
 		replaceData.put("@entitynameLowerCaseSingular", ScriptBuilder.getSingularEntityName(entity));
-
 		return new FileCreator().replaceFile("formulario-template-ts.txt", replaceData);
-
-//		return "import { Component, OnInit } from '@angular/core';\r\n" + 
-//				"\r\n" + 
-//				"\r\n" + 
-//				"@Component({\r\n" + 
-//				"\tselector: 'app-formulario-"+entity.getName().toLowerCase()+"',\r\n" + 
-//				"\ttemplateUrl: './formulario-"+entity.getName().toLowerCase()+".component.html',\r\n" + 
-//				"\tstyles: []\r\n" + 
-//				"})\r\n" + 
-//				"export class Formulario"+entity.getName()+"Component implements OnInit {\r\n" + 
-//				"\r\n" + 
-//				"\r\n" + 
-//				"\tconstructor() { }\r\n" + 
-//				"\r\n" + 
-//				"\tngOnInit() {\r\n" + 
-//				"\t}\r\n" + 
-//				"\r\n" + 
-//				"}\r\n" ;
 	}
 
 	/**

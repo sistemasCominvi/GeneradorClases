@@ -34,9 +34,10 @@
                 <ng-template pTemplate="body" let-rowData let-columns="columns">
                     <tr [pSelectableRow]="rowData">
                         <td *ngFor="let col of columns">
-                            <span class="ui-column-title">{{col.header}}</span>
-                            <div>{{rowData[col.field]}}</div>
-
+							<span class="ui-column-title">{{col.header}}</span>
+                        	<div *ngIf="!col.decimal && !col.fecha">{{rowData[col.field]}}</div>
+                        	<div *ngIf="col.decimal && !col.fecha">{{rowData[col.field] | number}}</div>
+                            <div *ngIf="col.fecha && !col.decimal ">{{rowData[col.field] | date}}</div>
                         </td>
                     </tr>
                 </ng-template>
