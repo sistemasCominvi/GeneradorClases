@@ -11,30 +11,8 @@
         <mat-card-content>
 
 
-            <div *ngIf="verFiltro" style="max-width: 250px;">
-                <ul>
-
-                </ul>
-            </div>
-
-
             <!-- Definicion de la tabla -->
             <p-table #dt [columns]="selectedColumns" [value]="@entityNameLowerCase" selectionMode="single" [(selection)]="selected@entitynameLowerCaseSingular" [responsive]="true" [resizableColumns]="true" [reorderableColumns]="true" stateStorage="local" stateKey="state-demo">
-
-
-                <!-- Filtro global y Ocultar/Mostrar columnas-->
-                <ng-template pTemplate="caption">
-
-                    <div fxLayout="row" fxLayoutAlign="space-between center">
-
-                        <p-multiSelect [options]="columnas" [(ngModel)]="selectedColumns" optionLabel="header" selectedItemsLabel=">" [style]="{maxWidth: '200px'}" defaultLabel="Seleccionar columnas">
-                        </p-multiSelect>
-
-                        <mat-form-field style="width: 25%;">
-                            <input type="text" matInput pInputText placeholder="Filtro Global" (input)="dt.filterGlobal($event.target.value, 'contains')">
-                        </mat-form-field>
-                    </div>
-                </ng-template>
 
                 <!-- Cabecera -->
                 <ng-template pTemplate="header" let-columns>
@@ -57,7 +35,7 @@
                     <tr [pSelectableRow]="rowData">
                         <td *ngFor="let col of columns">
                             <span class="ui-column-title">{{col.header}}</span>
-                            <div *ngIf="!col.decimal && !col.fecha">{{rowData[col.field]}}</div>
+                            <div>{{rowData[col.field]}}</div>
 
                         </td>
                     </tr>

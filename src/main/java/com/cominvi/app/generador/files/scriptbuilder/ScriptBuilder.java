@@ -636,6 +636,10 @@ public class ScriptBuilder {
 					break;
 				case TS_URL:
 					result += "'/'+" + column.getName() + "+";
+					break;
+				case TS_URL_AS_OBJECT:
+					result += "'/'+" + getPluralEntityName(entity)+"."+column.getName() + "+";
+					break;
 				}
 			}
 			int cut = 0;
@@ -644,6 +648,7 @@ public class ScriptBuilder {
 			case PARAMETER:
 			case TS_PARAMETER:
 			case TS_URL:
+			case TS_URL_AS_OBJECT:
 			case PARAMETER_WITH_PATH_VARIABLE:
 			case ONLY_NAMES:
 				cut = 1;
@@ -673,7 +678,7 @@ public class ScriptBuilder {
 	 */
 	public enum PrimaryKeyScriptType {
 		PARAMETER, WHERE_SCRIPT, WHERE_SCRIPT_WITH_QUESTION_MARK, ONLY_NAMES, PARAMETER_WITH_PATH_VARIABLE,
-		FOR_GET_MAPPING, TS_PARAMETER, TS_URL
+		FOR_GET_MAPPING, TS_PARAMETER, TS_URL, TS_URL_AS_OBJECT
 	}
 
 }
