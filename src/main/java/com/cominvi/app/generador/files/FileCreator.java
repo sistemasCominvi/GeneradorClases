@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -64,7 +65,7 @@ public class FileCreator {
 	 * @param file     el archivo
 	 * @return el archivo leído en forma de String
 	 */
-	private String readFileToString(String fileName, File file) {
+	public String readFileToString(String fileName, File file) {
 		String text = "";
 		ClassLoader classLoader = getClass().getClassLoader();
 		if (file == null)
@@ -111,6 +112,39 @@ public class FileCreator {
 		}
 
 	}
+
+	/**
+	 * @param fileSource el archivo origen alojado en src/main/resources
+	 * @param replaceData los datos a reemplazar etiqueta-dato
+	 * @param outputPath la ruta de salida del archivo
+	 * @return accion exitosa
+	 */
+	public boolean replaceAndCreateFile(String fileSource, Map<String, String> replaceData, String outputPath) {
+		
+		String input = readFileToString(fileSource, null);
+		for (Map.Entry<String, String> entry : replaceData.entrySet()) 
+			input.replaceAll(entry.getKey(), entry.getValue());
+		try {
+			writeFile(input, outputPath);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * @param fileSource el archivo origen alojado en src/main/resources
+	 * @param replaceData los datos a reemplazar etiqueta-dato
+	 * @return el texto reemplazado
+	 */
+	public String replaceFile(String fileSource, Map<String, String> replaceData) {
+		String input = readFileToString(fileSource, null);
+		for (Map.Entry<String, String> entry : replaceData.entrySet()) 
+			input = input.replaceAll(entry.getKey(), entry.getValue());
+		return input;
+	}
+
 
 	/**
 	 * Metodo para crear todos los archivos.
@@ -372,19 +406,19 @@ public class FileCreator {
 	 * Borra los archivos
 	 */
 	public static void deleteAll() {
-		try {			
+		try {
 			FileUtils.deleteDirectory(new File(ProjectFolderConfiguration.getBaseURI().replaceAll("\\\\/", "/")));
 			FileUtils.deleteDirectory(new File(ProjectFolderConfiguration.getModelPath().replaceAll("\\\\/", "/")));
 			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_MODELS_PATH.replaceAll("\\\\/", "/")));
 			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_SERVICES_PATH.replaceAll("\\\\/", "/")));
 			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_PATH.replaceAll("\\\\/", "/")));
+			FileUtils.deleteDirectory(new File(FrontendGenerator.TS_COMPONENT_PATH.replaceAll("\\\\/", "/")));
 			new File(ProjectFolderConfiguration.getORMXMLAbsolutePath().replaceAll("\\\\/", "/")).delete();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
 
 	/**
 	 * @param directoryToBeDeleted

@@ -1,4 +1,4 @@
-package com.cominvi.app.generador.files;
+package com.cominvi.app.generador.xml;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,8 +13,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.cominvi.app.generador.xml.Column;
-import com.cominvi.app.generador.xml.Entity;
 import com.cominvi.app.generador.xml.Column.ColumnType;
 
 /**
@@ -38,6 +36,12 @@ public class XMLExtractor {
 	private static final String VALUE_ATTRIBUTE = "value";
 	private static final String MANY_TO_ONE_TAG = "many-to-one";
 	private String xmlPath;
+
+	public static final String[] CAMPOS_AUDITORIA = { "fechahoraalta", "fechahoramod", "idempleadoalta",
+			"idempleadomod", "ipalta", "ipmod", "latitudalta", "latitudmod", "longitudalta", "longitudmod",
+			"tipodispositivoalta", "tipodispositivomod" };
+	
+	public static final int LIMIT_CAMPOS_AUDITORIA_PRIMARY = 4;
 
 	public XMLExtractor(String xmlPath) {
 		this.xmlPath = xmlPath;
@@ -135,17 +139,42 @@ public class XMLExtractor {
 		if (definition.getAttribute("column-definition") != null)
 			column.setColumnDefinition(definition.getAttribute("column-definition"));
 		column.setName(definition.getAttribute("name"));
+		column.setAuditoria(isCampoAuditoria(column.getName()));
+		column.setAuditoriaPrimary(isCampoAuditoriaPrimary(column.getName()));
 		try {
 			int length = Integer.parseInt(definition.getAttribute("length"));
 			column.setLength(length);
 		} catch (NumberFormatException ex) {
 		}
 		String nullable = definition.getAttribute("nullable");
-		if (nullable != null && nullable.equals("")) {
-			column.setNullable(nullable.equals("true"));
+		column.setNullable(false);
+		if (nullable != null && !nullable.equals("")) {
+			column.setNullable(!nullable.equals("false"));
 		}
 
 		return column;
+	}
+
+	/**
+	 * @param column
+	 * @return
+	 */
+	private boolean isCampoAuditoria(String column) {
+		for (int i = 0; i < CAMPOS_AUDITORIA.length; i++)
+			if (CAMPOS_AUDITORIA[i].equals(column))
+				return true;
+		return false;
+	}
+	
+	/**
+	 * @param column
+	 * @return
+	 */
+	private boolean isCampoAuditoriaPrimary(String column) {
+		for (int i = 0; i < LIMIT_CAMPOS_AUDITORIA_PRIMARY; i++)
+			if (CAMPOS_AUDITORIA[i].equals(column))
+				return true;
+		return false;
 	}
 
 	/**

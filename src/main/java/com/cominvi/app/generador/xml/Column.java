@@ -13,6 +13,8 @@ public class Column {
 	private int length;
 	private ColumnType columnType;
 	private String fieldName;
+	private boolean auditoria;
+	private boolean auditoriaPrimary;
 
 	public enum ColumnType {
 		ID, BASIC, MANY_TO_ONE, ONE_TO_MANY, FOREIGN
@@ -80,6 +82,22 @@ public class Column {
 
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
+	}
+
+	public boolean isAuditoria() {
+		return auditoria;
+	}
+
+	public void setAuditoria(boolean auditoria) {
+		this.auditoria = auditoria;
+	}
+
+	public boolean isAuditoriaPrimary() {
+		return auditoriaPrimary;
+	}
+
+	public void setAuditoriaPrimary(boolean auditoriaPrimary) {
+		this.auditoriaPrimary = auditoriaPrimary;
 	}
 
 }

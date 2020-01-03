@@ -1,12 +1,13 @@
 package com.cominvi.app.generador;
 
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.cominvi.app.generador.config.Configuracion;
 import com.cominvi.app.generador.files.FileCreator;
-import com.cominvi.app.generador.files.XMLExtractor;
 import com.cominvi.app.generador.files.scriptbuilder.ScriptBuilder;
 import com.cominvi.app.generador.files.scriptbuilder.ScriptBuilder.PrimaryKeyScriptType;
 import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
@@ -14,6 +15,7 @@ import com.cominvi.app.generador.frontend.FrontendGenerator;
 import com.cominvi.app.generador.pom.POMExplorer;
 import com.cominvi.app.generador.xml.Column;
 import com.cominvi.app.generador.xml.Entity;
+import com.cominvi.app.generador.xml.XMLExtractor;
 
 /**
  * @author angelo.loza
@@ -55,7 +57,7 @@ public class Main {
 					config.setModelName(ProjectFolderConfiguration.getModelPackage());
 					config.setUrlHome(ProjectFolderConfiguration.getBaseURI());
 					config.setProject(databaseName);
-					config.setNameClassMin(entity.getName().toLowerCase());
+					config.setNameClassMin(ScriptBuilder.getSingularEntityName(entity));
 					config.setTableName(entity.getTableName());
 					config.setPaquete(ProjectFolderConfiguration.getBasePackage());
 
@@ -87,6 +89,8 @@ public class Main {
 					
 					FrontendGenerator.createModel(entity);
 					FrontendGenerator.createServices(entity);
+					FrontendGenerator.createForms(entity);
+					FrontendGenerator.createLists(entity);
 
 				}
 				System.out.println("Se genero la estructura dao,service,controller para " + counter + " de "

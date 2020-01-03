@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.cominvi.app.generador.files.XMLExtractor;
 import com.cominvi.app.generador.folders.ProjectFolderConfiguration;
 import com.cominvi.app.generador.frontend.FrontendGenerator;
 import com.cominvi.app.generador.xml.Column;
 import com.cominvi.app.generador.xml.Entity;
+import com.cominvi.app.generador.xml.XMLExtractor;
 import com.cominvi.app.generador.xml.Column.ColumnType;
 import com.google.common.base.CaseFormat;
 
@@ -281,13 +281,14 @@ public class ScriptBuilder {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @param entity
 	 * @return
 	 */
-	public static String getPluralEntityName(Entity entity) {;
-		return getSingularEntityName(entity)+"s";
+	public static String getPluralEntityName(Entity entity) {
+		;
+		return entity.getName().toLowerCase();
 	}
 
 	/**
@@ -393,8 +394,11 @@ public class ScriptBuilder {
 	 */
 	public static String getSingularEntityName(Entity entity) {
 		String entityName = entity.getName().toLowerCase();
-		if (entityName.charAt(entityName.length() - 1) == 's')
+		if (entityName.endsWith("es")) {
+			entityName = entityName.substring(0, entityName.length() - 2);
+		} else if (entityName.endsWith("s"))
 			entityName = entityName.substring(0, entityName.length() - 1);
+
 		return entityName;
 	}
 
@@ -543,7 +547,7 @@ public class ScriptBuilder {
 	 * @param entity la entidad a extraer
 	 * @return el campo correspondiente a la columna
 	 */
-	public static Field getFieldByColummn(Column column, Entity entity, boolean withIds) {
+	public static Field getFieldByColumn(Column column, Entity entity, boolean withIds) {
 		Field[] fields = getEntityFields(entity, withIds);
 		for (int i = 0; i < fields.length; i++) {
 			if (fields[i].getName().equals(column.getName()))
@@ -563,7 +567,7 @@ public class ScriptBuilder {
 	 * @return la asiganci�n dinamica segun su tipo (Long, int o string)
 	 */
 	public static String getDynamicIDAssignation(Column primaryKey, Entity entity) {
-		Field field = getFieldByColummn(primaryKey, entity, true);
+		Field field = getFieldByColumn(primaryKey, entity, true);
 		if (field != null) {
 			if (field.getType().toString().contains("Long") || field.getType().toString().contains("long")) {
 				return "set" + ScriptBuilder.capitalizeFirstLetter(primaryKey.getName())
@@ -627,10 +631,15 @@ public class ScriptBuilder {
 					result += "/{" + column.getName() + "}";
 					break;
 				case TS_PARAMETER:
-					result += column.getName()+":"+FrontendGenerator.getTypeScriptField(getFieldByColummn(column, entity, true))+",";
+					result += column.getName() + ":"
+							+ FrontendGenerator.getTypeScriptField(getFieldByColumn(column, entity, true)) + ",";
 					break;
 				case TS_URL:
-					result += "'/'+"+column.getName()+"+";
+					result += "'/'+" + column.getName() + "+";
+					break;
+				case TS_URL_AS_OBJECT:
+					result += "'/'+" + getPluralEntityName(entity)+"."+column.getName() + "+";
+					break;
 				}
 			}
 			int cut = 0;
@@ -639,6 +648,7 @@ public class ScriptBuilder {
 			case PARAMETER:
 			case TS_PARAMETER:
 			case TS_URL:
+			case TS_URL_AS_OBJECT:
 			case PARAMETER_WITH_PATH_VARIABLE:
 			case ONLY_NAMES:
 				cut = 1;
@@ -649,7 +659,7 @@ public class ScriptBuilder {
 			case WHERE_SCRIPT_WITH_QUESTION_MARK:
 				cut = 5;
 				break;
-				
+
 			}
 			result = result.substring(0, result.length() - cut);
 		} catch (Exception e) {
@@ -668,7 +678,7 @@ public class ScriptBuilder {
 	 */
 	public enum PrimaryKeyScriptType {
 		PARAMETER, WHERE_SCRIPT, WHERE_SCRIPT_WITH_QUESTION_MARK, ONLY_NAMES, PARAMETER_WITH_PATH_VARIABLE,
-		FOR_GET_MAPPING, TS_PARAMETER, TS_URL
+		FOR_GET_MAPPING, TS_PARAMETER, TS_URL, TS_URL_AS_OBJECT
 	}
 
 }
