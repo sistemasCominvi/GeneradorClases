@@ -248,7 +248,7 @@ public class FrontendGenerator {
 				+ "</mat-card-subtitle>\r\n" + "\t</mat-card-header>\r\n" + "\r\n" + "\t<mat-card-content>\r\n"
 				+ FormBuilder.getFormsHTML(entity, formType) + "\t</mat-card-content>\r\n" + "\t<mat-card-actions>\r\n"
 				+ "\t\t<button mat-button (click)=\"aceptar()\">Aceptar</button>\r\n"
-				+ "\t\t<button mat-button (click)=\"aceptar()\">Cancelar</button>\r\n" + "\t</mat-card-actions>\r\n"
+				+ "\t\t<button mat-button (click)=\"cancelar()\">Cancelar</button>\r\n" + "\t</mat-card-actions>\r\n"
 				+ "</mat-card>";
 	}
 
