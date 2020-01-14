@@ -57,6 +57,8 @@ public class ScriptBuilder {
 							: (column.getName().equals(FECHA_HORA_MOD_FIELD)
 									|| column.getName().equals(FECHA_HORA_ALTA_FIELD) ? "getdate()" : "?"))
 							+ ",";
+				} else if(entity.getName().contains("Relacion")) {
+					columns += column.getName()+",";
 				}
 			}
 			columns = columns.substring(0, columns.length() - 1);
@@ -202,7 +204,7 @@ public class ScriptBuilder {
 		} catch (StringIndexOutOfBoundsException e) {
 			System.err.println(
 					"Ocurri� un error al obtener los get de la entidad " + entity.getName() + ", result:" + columns);
-			result ="";
+			result = "";
 		}
 		return result;
 	}
@@ -224,8 +226,15 @@ public class ScriptBuilder {
 			if (column.getColumnType() != ColumnType.ID/* || !entityHasIdentity(entity) */)
 				columns += column.getName().equals(FECHA_HORA_MOD_FIELD) ? column.getName() + " = getdate(),"
 						: column.getName() + " = ?,";
+			if(entity.getName().contains("Relacion")) 
+				columns+= column.getName() + " = ?,";
+			
 		}
+		try {
 		columns = columns.substring(0, columns.length() - 1);
+		}catch(StringIndexOutOfBoundsException e) {
+			System.err.println("Ocurrió un error al generar los SET SQL de la entidad:"+entity.getName()+"\n¿La entidad contiene puras llaves primarias?\nCantidad de columnas procesadas:"+entity.getColumns().size());
+		}
 		return columns;
 	}
 
@@ -640,7 +649,7 @@ public class ScriptBuilder {
 					result += "'/'+" + column.getName() + "+";
 					break;
 				case TS_URL_AS_OBJECT:
-					result += "'/'+" + getPluralEntityName(entity)+"."+column.getName() + "+";
+					result += "'/'+" + getPluralEntityName(entity) + "." + column.getName() + "+";
 					break;
 				}
 			}
