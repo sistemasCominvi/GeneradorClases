@@ -29,7 +29,7 @@ public class FrontendGenerator {
 	public static final String TS_MODELS_PATH = TS_PATH + "/models";
 	public static final String TS_SERVICES_PATH = TS_PATH + "/services";
 	public static final String TS_COMPONENT_PATH = TS_PATH + "/catalogos";
-	public static int MAXIMUM_FORM_TYPE_THRESHOLD = 1;
+	public static int MAXIMUM_FORM_TYPE_THRESHOLD = 5;
 
 	/**
 	 * Inicializa las carpetas
@@ -122,10 +122,10 @@ public class FrontendGenerator {
 				"listado-" + entity.getName().toLowerCase() + ".component.ts");
 	}
 
-
 	/**
 	 * 
 	 * Regresa el tipo de columna
+	 * 
 	 * @param column
 	 * @param entity
 	 * @return
@@ -138,8 +138,8 @@ public class FrontendGenerator {
 
 		if (isTypeNumber(fieldType))
 			return ", decimal:true";
-		//if (fieldType.equals("string") || fieldType.equals("boolean"))
-			//return fieldType;
+		// if (fieldType.equals("string") || fieldType.equals("boolean"))
+		// return fieldType;
 		if (fieldType.equals("date"))
 			return ", fecha:true";
 		return "";

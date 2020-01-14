@@ -49,7 +49,10 @@ public class FormBuilder {
 	 * @return
 	 */
 	private static String getInputType(Column column, Entity entity) {
+		
 		Field field = ScriptBuilder.getFieldByColumn(column, entity, true);
+		
+		if(field == null) return "";
 
 		String inputType = "type=\"text\"";
 

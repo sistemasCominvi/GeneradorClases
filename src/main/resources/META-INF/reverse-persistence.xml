@@ -14,13 +14,26 @@
 				/> <property name="openjpa.ConnectionURL" value="jdbc:jtds:sqlserver://CM-SIS-SAUL/general" 
 				/> <property name="javax.persistence.jdbc.driver" value="net.sourceforge.jtds.jdbc.Driver" 
 				/> -->
-			<property name="openjpa.ConnectionUserName" value="angelo" />
+			<!-- <property name="openjpa.ConnectionUserName" value="angelo" />
 			<property name="openjpa.ConnectionPassword"
 				value="Cominvi123" />
 			<property name="openjpa.ConnectionURL"
 				value="jdbc:jtds:sqlserver://localhost/compras" />
 			<property name="javax.persistence.jdbc.driver"
-				value="net.sourceforge.jtds.jdbc.Driver" />
+				value="net.sourceforge.jtds.jdbc.Driver" />-->
+<!-- 						<property name="openjpa.ConnectionUserName" value="SYSDBA" /> -->
+<!-- 			<property name="openjpa.ConnectionPassword" -->
+<!-- 				value="masterkey" /> -->
+<!-- 			<property name="openjpa.ConnectionURL" -->
+<!-- 				value="jdbc:firebirdsql://192.168.1.2:3050/sac" /> -->
+<!-- 			<property name="javax.persistence.jdbc.driver" -->
+<!-- 				value="org.firebirdsql.jdbc.FBDriver" /> -->
+				
+				<property name="openjpa.ConnectionUserName" value="sa" />
+            <property name="openjpa.ConnectionPassword" value="cominvidev_nji9mko0.-" />
+            <property name="openjpa.ConnectionURL" value="jdbc:jtds:sqlserver://192.168.1.91/compras" />
+            <property name="javax.persistence.jdbc.driver" value="net.sourceforge.jtds.jdbc.Driver" />
+				
 
 		</properties>
 	</persistence-unit>
