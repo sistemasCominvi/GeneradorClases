@@ -16,7 +16,7 @@
 	<url>http://www.cominvi.com</url>
 	<properties>
 		<entity-package>com.cominvi.app</entity-package>
-		<entity-package-model>com.cominvi.app.commons.models</entity-package-model>
+		<entity-package-model>com.cominvi.app.commons.compras</entity-package-model>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -105,6 +105,18 @@
 			<version>2.6</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.firebirdsql.jdbc/jaybird -->
+		<dependency>
+			<groupId>org.firebirdsql.jdbc</groupId>
+			<artifactId>jaybird</artifactId>
+			<version>2.1.6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 	</dependencies>
 	<build>

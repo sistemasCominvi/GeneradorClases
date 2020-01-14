@@ -139,6 +139,7 @@ public class XMLExtractor {
 		if (definition.getAttribute("column-definition") != null)
 			column.setColumnDefinition(definition.getAttribute("column-definition"));
 		column.setName(definition.getAttribute("name"));
+		column.setSqlName(definition.getAttribute("name"));
 		column.setAuditoria(isCampoAuditoria(column.getName()));
 		column.setAuditoriaPrimary(isCampoAuditoriaPrimary(column.getName()));
 		try {

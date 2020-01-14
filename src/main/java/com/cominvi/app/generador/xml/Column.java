@@ -8,6 +8,7 @@ package com.cominvi.app.generador.xml;
  */
 public class Column {
 	private String name;
+	private String sqlName;
 	private String columnDefinition;
 	private boolean nullable;
 	private int length;
@@ -98,6 +99,14 @@ public class Column {
 
 	public void setAuditoriaPrimary(boolean auditoriaPrimary) {
 		this.auditoriaPrimary = auditoriaPrimary;
+	}
+
+	public String getSqlName() {
+		return sqlName;
+	}
+
+	public void setSqlName(String sqlName) {
+		this.sqlName = sqlName;
 	}
 
 }

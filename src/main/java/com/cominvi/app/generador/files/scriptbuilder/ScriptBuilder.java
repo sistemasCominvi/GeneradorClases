@@ -202,6 +202,7 @@ public class ScriptBuilder {
 		} catch (StringIndexOutOfBoundsException e) {
 			System.err.println(
 					"Ocurri� un error al obtener los get de la entidad " + entity.getName() + ", result:" + columns);
+			result ="";
 		}
 		return result;
 	}
@@ -460,10 +461,11 @@ public class ScriptBuilder {
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
 						+ "(new " + ProjectFolderConfiguration.getModelPackage() + "."
 						+ capitalizeFirstLetter(getDebuggedField(fields[i], false)) + "(rs.get"
-						+ getDebuggedField(foreign.getField(), false) + "(\"" + actualColumn.getName() + "\"))); \n";
+						+ getDebuggedField(foreign.getField(), false) + "(\"" + actualColumn.getSqlName() + "\"))); \n";
 			} else {
+				Column actualColumn = getColumnByField(fields[i], entity);
 				rowMapper += getSingularEntityName(entity) + ".set" + capitalizeFirstLetter(fields[i].getName())
-						+ "(rs.get" + isDate(getDebuggedField(fields[i], false)) + "(\"" + fields[i].getName()
+						+ "(rs.get" + isDate(getDebuggedField(fields[i], false)) + "(\"" + actualColumn.getSqlName()
 						+ "\")); \n";
 			}
 		}
@@ -521,7 +523,7 @@ public class ScriptBuilder {
 						continue inputCycle;
 					}
 				} else {
-					if (column.getName().equals(inputFields[i].getName())) {
+					if (column.getFieldName().equals(inputFields[i].getName())) {
 						fields[entity.getColumns().indexOf(column)] = inputFields[i];
 						continue inputCycle;
 					}
