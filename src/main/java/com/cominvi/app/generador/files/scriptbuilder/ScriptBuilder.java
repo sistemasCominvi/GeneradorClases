@@ -592,7 +592,10 @@ public class ScriptBuilder {
 			} else if (field.getType().toString().contains("Double") || field.getType().toString().contains("double")) {
 				return "set" + ScriptBuilder.capitalizeFirstLetter(primaryKey.getName())
 						+ "(keyHolder.getKey().doubleValue());";
-			}
+			}else if (field.getType().toString().contains("Byte") || field.getType().toString().contains("byte")) {
+				return "set" + ScriptBuilder.capitalizeFirstLetter(primaryKey.getName())
+				+ "(keyHolder.getKey().byteValue());";
+	}
 		}
 		return null;
 	}

@@ -144,6 +144,23 @@ public class FileCreator {
 			input = input.replaceAll(entry.getKey(), entry.getValue());
 		return input;
 	}
+	
+	
+	/**
+	 * 
+	 */
+	public static void createGlobalRepository() {
+		String urlDao = ProjectFolderConfiguration.getBaseURI()+ "/repositories/";
+		String fileDao = urlDao + "JdbcGlobalRepository.java";
+		FileCreator fileCreator = new FileCreator();
+		fileCreator.createFile(urlDao);
+		try {
+			writeFile(fileCreator.readFileToString("globalrepository.txt", null), fileDao);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 
 	/**
