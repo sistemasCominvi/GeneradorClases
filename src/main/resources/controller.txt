@@ -24,7 +24,6 @@ import @paqueteService.I@nameClaseService;
 import @nameModel.@nameClase;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
 @RequestMapping("/@nameClassMin")
 public class @nameClaseController {
 

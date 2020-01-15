@@ -39,7 +39,7 @@ public class XMLExtractor {
 
 	public static final String[] CAMPOS_AUDITORIA = { "fechahoraalta", "fechahoramod", "idempleadoalta",
 			"idempleadomod", "ipalta", "ipmod", "latitudalta", "latitudmod", "longitudalta", "longitudmod",
-			"tipodispositivoalta", "tipodispositivomod" };
+			"tipodispositivoalta", "tipodispositivomod", "equipoalta","equipomod" };
 	
 	public static final int LIMIT_CAMPOS_AUDITORIA_PRIMARY = 4;
 

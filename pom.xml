@@ -16,7 +16,7 @@
 	<url>http://www.cominvi.com</url>
 	<properties>
 		<entity-package>com.cominvi.app</entity-package>
-		<entity-package-model>com.cominvi.app.commons.compras</entity-package-model>
+		<entity-package-model>com.cominvi.app.commons.sissmac</entity-package-model>
 	</properties>
 	<dependencies>
 		<dependency>

@@ -39,6 +39,7 @@ public class Main {
 					.extractEntities();
 			
 			FrontendGenerator.init();
+			FileCreator.createGlobalRepository();
 			/*
 			 * Recorre cada entity y genera su dao y servicio con su correspondiente
 			 * implementaci�n

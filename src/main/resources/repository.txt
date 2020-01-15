@@ -18,10 +18,7 @@ import org.springframework.stereotype.Repository;
 import @nameModel.@nameClase;
 
 @Repository
-public class Jdbc@nameClaseRepository {
-
-	@Autowired
-	public JdbcTemplate jdbcTemplate;
+public class Jdbc@nameClaseRepository extends JdbcGlobalRepository{;
 
     private final String tabla = "@project.dbo.@tableName";
     
