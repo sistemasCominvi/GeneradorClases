@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-Limpiar</actionName>
+            <displayName>Limpiar</displayName>
+            <goals>
+                <goal>exec:java@clean</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-Modelos</actionName>
+            <displayName>Modelos</displayName>
+            <goals>
+                <goal>exec:java@rmt</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-Controladores</actionName>
+            <displayName>Controladores</displayName>
+            <goals>
+                <goal>exec:java@cb</goal>
+            </goals>
+        </action>
+    </actions>

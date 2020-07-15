@@ -11,7 +11,7 @@ import com.cominvi.app.generador.xml.Column.ColumnType;
  * @author angelo.loza
  *
  */
-public class Entity {
+public class Entity  {
 	
 	private List<Column> columns;
 	private String name;
